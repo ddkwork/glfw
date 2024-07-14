@@ -15,6 +15,7 @@ import (
 )
 
 func TestBindGlfw(t *testing.T) {
+	TestBindMacros(t)
 	pkg := gengo.NewPackage("glfw",
 		gengo.WithRemovePrefix(
 			"glfw",
@@ -42,7 +43,7 @@ func TestBindMacros(t *testing.T) {
 	)
 
 	g := stream.NewGeneratedFile()
-	g.P("package main")
+	g.P("package glfw")
 	g.P()
 
 	g.P("const (")
@@ -106,7 +107,7 @@ func TestBindMacros(t *testing.T) {
 	g.P(")")
 	g.ReplaceAll("Glfw", "")
 	g.ReplaceAll("Cursor=0x00033001", "Cursor_=0x00033001")
-	stream.WriteGoFile("tmp/vars.go", g.Buffer)
+	stream.WriteGoFile("../vars.go", g.Buffer)
 	for _, p := range macros.List() {
 		// return
 		mylog.Todo(p.Key + " = " + p.Value)
