@@ -5,6 +5,9 @@ import (
 	"testing"
 	"unicode"
 
+	"github.com/ddkwork/app/bindgen/clang"
+	"github.com/ddkwork/app/bindgen/gengo"
+
 	"github.com/ddkwork/golibrary/mylog"
 	"github.com/ddkwork/golibrary/stream"
 	"github.com/ddkwork/golibrary/stream/orderedmap"
@@ -12,7 +15,6 @@ import (
 )
 
 func TestBindGlfw(t *testing.T) {
-	t.Skip()
 	pkg := gengo.NewPackage("glfw",
 		gengo.WithRemovePrefix(
 			"glfw",
