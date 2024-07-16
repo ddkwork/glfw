@@ -20,7 +20,7 @@ type _CrtLocalePointers struct {
 	Locinfo unsafe.Pointer
 	Mbcinfo unsafe.Pointer
 }
-type MbstateT struct {
+type _Mbstatet struct {
 	_Wchar uint64
 	_Byte  uint16
 	_State uint16
@@ -109,7 +109,8 @@ type (
 	WctypeT                              = uint16
 	_Time32T                             = int64
 	TimeT                                = int64
-	_LocaleT                             = *_CrtLocalePointers
+	_LocaleT                             = unsafe.Pointer
+	MbstateT                             = any
 	RsizeT                               = uint
 	Int8T                                = int8
 	Int16T                               = int16
@@ -196,33 +197,6 @@ type Glproc = unsafe.Pointer
 //
 // @since Added in version 3.2.
 type Vkproc = unsafe.Pointer
-
-// @brief Opaque monitor object.
-// Opaque monitor object.
-//
-// @see
-// @ref monitor_object
-//
-// @since Added in version 3.0.
-type Monitor = any
-
-// @brief Opaque window object.
-// Opaque window object.
-//
-// @see
-// @ref window_object
-//
-// @since Added in version 3.0.
-type Window = any
-
-// @brief Opaque cursor object.
-// Opaque cursor object.
-//
-// @see
-// @ref cursor_object
-//
-// @since Added in version 3.1.
-type Cursor = any
 
 // @brief The function pointer type for memory allocation callbacks.
 // This is the function pointer type for memory allocation callbacks.  A memory
@@ -798,82 +772,6 @@ type Monitorfun = unsafe.Pointer
 // @since Added in version 3.2.
 type Joystickfun = unsafe.Pointer
 
-// @brief Video mode type.
-// This describes a single video mode.
-//
-// @sa
-// @ref monitor_modes
-//
-// @sa
-// @ref glfwGetVideoMode
-//
-// @sa
-// @ref glfwGetVideoModes
-//
-// @since Added in version 1.0.
-//
-// @glfw3
-// Added refresh rate member.
-type Vidmode = Vidmode
-
-// @brief Gamma ramp.
-// This describes the gamma ramp for a monitor.
-//
-// @sa
-// @ref monitor_gamma
-//
-// @sa
-// @ref glfwGetGammaRamp
-//
-// @sa
-// @ref glfwSetGammaRamp
-//
-// @since Added in version 3.0.
-type Gammaramp = Gammaramp
-
-// @brief Image data.
-// This describes a single 2D image.  See the documentation for each related
-// function what the expected pixel format is.
-//
-// @sa
-// @ref cursor_custom
-//
-// @sa
-// @ref window_icon
-//
-// @since Added in version 2.1.
-//
-// @glfw3
-// Removed format and bytes-per-pixel members.
-type Image = Image
-
-// @brief Gamepad input state
-// This describes the input state of a gamepad.
-//
-// @sa
-// @ref gamepad
-//
-// @sa
-// @ref glfwGetGamepadState
-//
-// @since Added in version 3.3.
-type Gamepadstate = Gamepadstate
-
-// @brief Custom heap memory allocator.
-// This describes a custom heap memory allocator for GLFW.  To set an allocator, pass it
-// to
-// @ref glfwInitAllocator
-// before initializing the library.
-//
-// @sa
-// @ref init_allocator
-//
-// @sa
-// @ref glfwInitAllocator
-//
-// @since Added in version 3.4.
-type Allocator = Allocator
-
 var __imp___va_start bindlib.PreloadProc
 
 // Gengo init function.
@@ -1347,20 +1245,20 @@ func init() {
 	__imp_glfwGetProcAddress = GengoLibrary.ImportNow("glfwGetProcAddress")
 	__imp_glfwVulkanSupported = GengoLibrary.ImportNow("glfwVulkanSupported")
 	__imp_glfwGetRequiredInstanceExtensions = GengoLibrary.ImportNow("glfwGetRequiredInstanceExtensions")
-	bindlib.Validate((*_CrtLocaleDataPublic)(nil), 0x10, 0x8, "_LocalePctype", 0x0, "_LocaleMbCurMax", 0x8, "_LocaleLcCodepage", 0xc)
-	bindlib.Validate((*_CrtLocalePointers)(nil), 0x10, 0x8, "Locinfo", 0x0, "Mbcinfo", 0x8)
-	bindlib.Validate((*MbstateT)(nil), 0x8, 0x4, "_Wchar", 0x0, "_Byte", 0x4, "_State", 0x6)
-	bindlib.Validate((*Vidmode)(nil), 0x18, 0x4, "Width", 0x0, "Height", 0x4, "redBits", 0x8, "greenBits", 0xc, "blueBits", 0x10, "refreshRate", 0x14)
-	bindlib.Validate((*Gammaramp)(nil), 0x20, 0x8, "Red", 0x0, "Green", 0x8, "Blue", 0x10, "Size", 0x18)
-	bindlib.Validate((*Image)(nil), 0x10, 0x8, "Width", 0x0, "Height", 0x4, "Pixels", 0x8)
-	bindlib.Validate((*Gamepadstate)(nil), 0x28, 0x4, "Buttons", 0x0, "Axes", 0x10)
-	bindlib.Validate((*Allocator)(nil), 0x20, 0x8, "Allocate", 0x0, "Reallocate", 0x8, "Deallocate", 0x10, "User", 0x18)
+	bindlib.Validate((*_CrtLocaleDataPublic)(nil), 16, 8, "_LocalePctype", 0, "_LocaleMbCurMax", 8, "_LocaleLcCodepage", 12)
+	bindlib.Validate((*_CrtLocalePointers)(nil), 16, 8, "Locinfo", 0, "Mbcinfo", 8)
+	bindlib.Validate((*_Mbstatet)(nil), 8, 4, "_Wchar", 0, "_Byte", 4, "_State", 6)
+	bindlib.Validate((*Vidmode)(nil), 24, 4, "Width", 0, "Height", 4, "redBits", 8, "greenBits", 12, "blueBits", 16, "refreshRate", 20)
+	bindlib.Validate((*Gammaramp)(nil), 32, 8, "Red", 0, "Green", 8, "Blue", 16, "Size", 24)
+	bindlib.Validate((*Image)(nil), 16, 8, "Width", 0, "Height", 4, "Pixels", 8)
+	bindlib.Validate((*Gamepadstate)(nil), 40, 4, "Buttons", 0, "Axes", 16)
+	bindlib.Validate((*Allocator)(nil), 32, 8, "Allocate", 0, "Reallocate", 8, "Deallocate", 16, "User", 24)
 }
-func _VaStart(**byte) { bindlib.CCall1(__imp___va_start.Addr(), bindlib.MarshallSyscall()) }
+func _VaStart(arg **byte) { bindlib.CCall1(__imp___va_start.Addr(), bindlib.MarshallSyscall(arg)) }
 
 var __imp___va_start bindlib.PreloadProc
 
-func _VaStart(*VaList) { bindlib.CCall1(__imp___va_start.Addr(), bindlib.MarshallSyscall()) }
+func _VaStart(arg *VaList) { bindlib.CCall1(__imp___va_start.Addr(), bindlib.MarshallSyscall(arg)) }
 
 var __imp___security_init_cookie bindlib.PreloadProc
 
@@ -3418,7 +3316,7 @@ var __imp_glfwInitAllocator bindlib.PreloadProc
 // @ref glfwInit
 //
 // @since Added in version 3.4.
-func InitAllocator(allocator *Allocator) {
+func InitAllocator(allocator unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwInitAllocator.Addr(), bindlib.MarshallSyscall(allocator))
 }
 
@@ -3692,9 +3590,9 @@ var __imp_glfwGetMonitors bindlib.PreloadProc
 // @ref glfwGetPrimaryMonitor
 //
 // @since Added in version 3.0.
-func GetMonitors(count *int32) **Monitor {
+func GetMonitors(count *int32) *unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetMonitors.Addr(), bindlib.MarshallSyscall(count))
-	return bindlib.UnmarshallSyscall[**Monitor](__res)
+	return bindlib.UnmarshallSyscall[*unsafe.Pointer](__res)
 }
 
 var __imp_glfwGetPrimaryMonitor bindlib.PreloadProc
@@ -3725,9 +3623,9 @@ var __imp_glfwGetPrimaryMonitor bindlib.PreloadProc
 // @ref glfwGetMonitors
 //
 // @since Added in version 3.0.
-func GetPrimaryMonitor() *Monitor {
+func GetPrimaryMonitor() unsafe.Pointer {
 	__res := bindlib.CCall0(__imp_glfwGetPrimaryMonitor.Addr())
-	return bindlib.UnmarshallSyscall[*Monitor](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwGetMonitorPos bindlib.PreloadProc
@@ -3757,7 +3655,7 @@ var __imp_glfwGetMonitorPos bindlib.PreloadProc
 // @ref monitor_properties
 //
 // @since Added in version 3.0.
-func GetMonitorPos(monitor *Monitor, xpos *int32, ypos *int32) {
+func GetMonitorPos(monitor unsafe.Pointer, xpos *int32, ypos *int32) {
 	bindlib.CCall3(__imp_glfwGetMonitorPos.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(xpos), bindlib.MarshallSyscall(ypos))
 }
 
@@ -3796,7 +3694,7 @@ var __imp_glfwGetMonitorWorkarea bindlib.PreloadProc
 // @ref monitor_workarea
 //
 // @since Added in version 3.3.
-func GetMonitorWorkarea(monitor *Monitor, xpos *int32, ypos *int32, width *int32, height *int32) {
+func GetMonitorWorkarea(monitor unsafe.Pointer, xpos *int32, ypos *int32, width *int32, height *int32) {
 	bindlib.CCall5(__imp_glfwGetMonitorWorkarea.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(xpos), bindlib.MarshallSyscall(ypos), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height))
 }
 
@@ -3836,7 +3734,7 @@ var __imp_glfwGetMonitorPhysicalSize bindlib.PreloadProc
 // @ref monitor_properties
 //
 // @since Added in version 3.0.
-func GetMonitorPhysicalSize(monitor *Monitor, widthMM *int32, heightMM *int32) {
+func GetMonitorPhysicalSize(monitor unsafe.Pointer, widthMM *int32, heightMM *int32) {
 	bindlib.CCall3(__imp_glfwGetMonitorPhysicalSize.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(widthMM), bindlib.MarshallSyscall(heightMM))
 }
 
@@ -3881,7 +3779,7 @@ var __imp_glfwGetMonitorContentScale bindlib.PreloadProc
 // @ref glfwGetWindowContentScale
 //
 // @since Added in version 3.3.
-func GetMonitorContentScale(monitor *Monitor, xscale *float32, yscale *float32) {
+func GetMonitorContentScale(monitor unsafe.Pointer, xscale *float32, yscale *float32) {
 	bindlib.CCall3(__imp_glfwGetMonitorContentScale.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(xscale), bindlib.MarshallSyscall(yscale))
 }
 
@@ -3915,7 +3813,7 @@ var __imp_glfwGetMonitorName bindlib.PreloadProc
 // @ref monitor_properties
 //
 // @since Added in version 3.0.
-func GetMonitorName(monitor *Monitor) *byte {
+func GetMonitorName(monitor unsafe.Pointer) *byte {
 	__res := bindlib.CCall1(__imp_glfwGetMonitorName.Addr(), bindlib.MarshallSyscall(monitor))
 	return bindlib.UnmarshallSyscall[*byte](__res)
 }
@@ -3948,7 +3846,7 @@ var __imp_glfwSetMonitorUserPointer bindlib.PreloadProc
 // @ref glfwGetMonitorUserPointer
 //
 // @since Added in version 3.3.
-func SetMonitorUserPointer(monitor *Monitor, pointer unsafe.Pointer) {
+func SetMonitorUserPointer(monitor unsafe.Pointer, pointer unsafe.Pointer) {
 	bindlib.CCall2(__imp_glfwSetMonitorUserPointer.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(pointer))
 }
 
@@ -3977,7 +3875,7 @@ var __imp_glfwGetMonitorUserPointer bindlib.PreloadProc
 // @ref glfwSetMonitorUserPointer
 //
 // @since Added in version 3.3.
-func GetMonitorUserPointer(monitor *Monitor) unsafe.Pointer {
+func GetMonitorUserPointer(monitor unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetMonitorUserPointer.Addr(), bindlib.MarshallSyscall(monitor))
 	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
@@ -4060,9 +3958,9 @@ var __imp_glfwGetVideoModes bindlib.PreloadProc
 //
 // @glfw3
 // Changed to return an array of modes for a specific monitor.
-func GetVideoModes(monitor *Monitor, count *int32) *Vidmode {
+func GetVideoModes(monitor unsafe.Pointer, count *int32) unsafe.Pointer {
 	__res := bindlib.CCall2(__imp_glfwGetVideoModes.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(count))
-	return bindlib.UnmarshallSyscall[*Vidmode](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwGetVideoMode bindlib.PreloadProc
@@ -4100,9 +3998,9 @@ var __imp_glfwGetVideoMode bindlib.PreloadProc
 // @ref glfwGetVideoModes
 //
 // @since Added in version 3.0.  Replaces `glfwGetDesktopMode`.
-func GetVideoMode(monitor *Monitor) *Vidmode {
+func GetVideoMode(monitor unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetVideoMode.Addr(), bindlib.MarshallSyscall(monitor))
-	return bindlib.UnmarshallSyscall[*Vidmode](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwSetGamma bindlib.PreloadProc
@@ -4149,7 +4047,7 @@ var __imp_glfwSetGamma bindlib.PreloadProc
 // @ref monitor_gamma
 //
 // @since Added in version 3.0.
-func SetGamma(monitor *Monitor, gamma float32) {
+func SetGamma(monitor unsafe.Pointer, gamma float32) {
 	bindlib.CCall2(__imp_glfwSetGamma.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(gamma))
 }
 
@@ -4195,9 +4093,9 @@ var __imp_glfwGetGammaRamp bindlib.PreloadProc
 // @ref monitor_gamma
 //
 // @since Added in version 3.0.
-func GetGammaRamp(monitor *Monitor) *Gammaramp {
+func GetGammaRamp(monitor unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetGammaRamp.Addr(), bindlib.MarshallSyscall(monitor))
-	return bindlib.UnmarshallSyscall[*Gammaramp](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwSetGammaRamp bindlib.PreloadProc
@@ -4252,7 +4150,7 @@ var __imp_glfwSetGammaRamp bindlib.PreloadProc
 // @ref monitor_gamma
 //
 // @since Added in version 3.0.
-func SetGammaRamp(monitor *Monitor, ramp *Gammaramp) {
+func SetGammaRamp(monitor unsafe.Pointer, ramp unsafe.Pointer) {
 	bindlib.CCall2(__imp_glfwSetGammaRamp.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(ramp))
 }
 
@@ -4590,9 +4488,9 @@ var __imp_glfwCreateWindow bindlib.PreloadProc
 // @ref glfwDestroyWindow
 //
 // @since Added in version 3.0.  Replaces `glfwOpenWindow`.
-func CreateWindow(width int32, height int32, title *byte, monitor *Monitor, share *Window) *Window {
+func CreateWindow(width int32, height int32, title *byte, monitor unsafe.Pointer, share unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall5(__imp_glfwCreateWindow.Addr(), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(title), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(share))
-	return bindlib.UnmarshallSyscall[*Window](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwDestroyWindow bindlib.PreloadProc
@@ -4627,7 +4525,7 @@ var __imp_glfwDestroyWindow bindlib.PreloadProc
 // @ref glfwCreateWindow
 //
 // @since Added in version 3.0.  Replaces `glfwCloseWindow`.
-func DestroyWindow(window *Window) {
+func DestroyWindow(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwDestroyWindow.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -4652,7 +4550,7 @@ var __imp_glfwWindowShouldClose bindlib.PreloadProc
 // @ref window_close
 //
 // @since Added in version 3.0.
-func WindowShouldClose(window *Window) int32 {
+func WindowShouldClose(window unsafe.Pointer) int32 {
 	__res := bindlib.CCall1(__imp_glfwWindowShouldClose.Addr(), bindlib.MarshallSyscall(window))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }
@@ -4680,7 +4578,7 @@ var __imp_glfwSetWindowShouldClose bindlib.PreloadProc
 // @ref window_close
 //
 // @since Added in version 3.0.
-func SetWindowShouldClose(window *Window, value int32) {
+func SetWindowShouldClose(window unsafe.Pointer, value int32) {
 	bindlib.CCall2(__imp_glfwSetWindowShouldClose.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(value))
 }
 
@@ -4730,7 +4628,7 @@ var __imp_glfwGetWindowTitle bindlib.PreloadProc
 // @ref glfwSetWindowTitle
 //
 // @since Added in version 3.4.
-func GetWindowTitle(window *Window) *byte {
+func GetWindowTitle(window unsafe.Pointer) *byte {
 	__res := bindlib.CCall1(__imp_glfwGetWindowTitle.Addr(), bindlib.MarshallSyscall(window))
 	return bindlib.UnmarshallSyscall[*byte](__res)
 }
@@ -4769,7 +4667,7 @@ var __imp_glfwSetWindowTitle bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func SetWindowTitle(window *Window, title *byte) {
+func SetWindowTitle(window unsafe.Pointer, title *byte) {
 	bindlib.CCall2(__imp_glfwSetWindowTitle.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(title))
 }
 
@@ -4834,7 +4732,7 @@ var __imp_glfwSetWindowIcon bindlib.PreloadProc
 // @ref window_icon
 //
 // @since Added in version 3.2.
-func SetWindowIcon(window *Window, count int32, images *Image) {
+func SetWindowIcon(window unsafe.Pointer, count int32, images unsafe.Pointer) {
 	bindlib.CCall3(__imp_glfwSetWindowIcon.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(count), bindlib.MarshallSyscall(images))
 }
 
@@ -4879,7 +4777,7 @@ var __imp_glfwGetWindowPos bindlib.PreloadProc
 // @ref glfwSetWindowPos
 //
 // @since Added in version 3.0.
-func GetWindowPos(window *Window, xpos *int32, ypos *int32) {
+func GetWindowPos(window unsafe.Pointer, xpos *int32, ypos *int32) {
 	bindlib.CCall3(__imp_glfwGetWindowPos.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(xpos), bindlib.MarshallSyscall(ypos))
 }
 
@@ -4928,7 +4826,7 @@ var __imp_glfwSetWindowPos bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func SetWindowPos(window *Window, xpos int32, ypos int32) {
+func SetWindowPos(window unsafe.Pointer, xpos int32, ypos int32) {
 	bindlib.CCall3(__imp_glfwSetWindowPos.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(xpos), bindlib.MarshallSyscall(ypos))
 }
 
@@ -4969,7 +4867,7 @@ var __imp_glfwGetWindowSize bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func GetWindowSize(window *Window, width *int32, height *int32) {
+func GetWindowSize(window unsafe.Pointer, width *int32, height *int32) {
 	bindlib.CCall3(__imp_glfwGetWindowSize.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height))
 }
 
@@ -5025,7 +4923,7 @@ var __imp_glfwSetWindowSizeLimits bindlib.PreloadProc
 // @ref glfwSetWindowAspectRatio
 //
 // @since Added in version 3.2.
-func SetWindowSizeLimits(window *Window, minwidth int32, minheight int32, maxwidth int32, maxheight int32) {
+func SetWindowSizeLimits(window unsafe.Pointer, minwidth int32, minheight int32, maxwidth int32, maxheight int32) {
 	bindlib.CCall5(__imp_glfwSetWindowSizeLimits.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(minwidth), bindlib.MarshallSyscall(minheight), bindlib.MarshallSyscall(maxwidth), bindlib.MarshallSyscall(maxheight))
 }
 
@@ -5078,7 +4976,7 @@ var __imp_glfwSetWindowAspectRatio bindlib.PreloadProc
 // @ref glfwSetWindowSizeLimits
 //
 // @since Added in version 3.2.
-func SetWindowAspectRatio(window *Window, numer int32, denom int32) {
+func SetWindowAspectRatio(window unsafe.Pointer, numer int32, denom int32) {
 	bindlib.CCall3(__imp_glfwSetWindowAspectRatio.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(numer), bindlib.MarshallSyscall(denom))
 }
 
@@ -5127,7 +5025,7 @@ var __imp_glfwSetWindowSize bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func SetWindowSize(window *Window, width int32, height int32) {
+func SetWindowSize(window unsafe.Pointer, width int32, height int32) {
 	bindlib.CCall3(__imp_glfwSetWindowSize.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height))
 }
 
@@ -5165,7 +5063,7 @@ var __imp_glfwGetFramebufferSize bindlib.PreloadProc
 // @ref glfwSetFramebufferSizeCallback
 //
 // @since Added in version 3.0.
-func GetFramebufferSize(window *Window, width *int32, height *int32) {
+func GetFramebufferSize(window unsafe.Pointer, width *int32, height *int32) {
 	bindlib.CCall3(__imp_glfwGetFramebufferSize.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height))
 }
 
@@ -5211,7 +5109,7 @@ var __imp_glfwGetWindowFrameSize bindlib.PreloadProc
 // @ref window_size
 //
 // @since Added in version 3.1.
-func GetWindowFrameSize(window *Window, left *int32, top *int32, right *int32, bottom *int32) {
+func GetWindowFrameSize(window unsafe.Pointer, left *int32, top *int32, right *int32, bottom *int32) {
 	bindlib.CCall5(__imp_glfwGetWindowFrameSize.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(left), bindlib.MarshallSyscall(top), bindlib.MarshallSyscall(right), bindlib.MarshallSyscall(bottom))
 }
 
@@ -5254,7 +5152,7 @@ var __imp_glfwGetWindowContentScale bindlib.PreloadProc
 // @ref glfwGetMonitorContentScale
 //
 // @since Added in version 3.3.
-func GetWindowContentScale(window *Window, xscale *float32, yscale *float32) {
+func GetWindowContentScale(window unsafe.Pointer, xscale *float32, yscale *float32) {
 	bindlib.CCall3(__imp_glfwGetWindowContentScale.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(xscale), bindlib.MarshallSyscall(yscale))
 }
 
@@ -5287,7 +5185,7 @@ var __imp_glfwGetWindowOpacity bindlib.PreloadProc
 // @ref glfwSetWindowOpacity
 //
 // @since Added in version 3.3.
-func GetWindowOpacity(window *Window) float32 {
+func GetWindowOpacity(window unsafe.Pointer) float32 {
 	__res := bindlib.CCall1(__imp_glfwGetWindowOpacity.Addr(), bindlib.MarshallSyscall(window))
 	return bindlib.UnmarshallSyscall[float32](__res)
 }
@@ -5331,7 +5229,7 @@ var __imp_glfwSetWindowOpacity bindlib.PreloadProc
 // @ref glfwGetWindowOpacity
 //
 // @since Added in version 3.3.
-func SetWindowOpacity(window *Window, opacity float32) {
+func SetWindowOpacity(window unsafe.Pointer, opacity float32) {
 	bindlib.CCall2(__imp_glfwSetWindowOpacity.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(opacity))
 }
 
@@ -5377,7 +5275,7 @@ var __imp_glfwIconifyWindow bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func IconifyWindow(window *Window) {
+func IconifyWindow(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwIconifyWindow.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -5414,7 +5312,7 @@ var __imp_glfwRestoreWindow bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func RestoreWindow(window *Window) {
+func RestoreWindow(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwRestoreWindow.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -5446,7 +5344,7 @@ var __imp_glfwMaximizeWindow bindlib.PreloadProc
 // @ref glfwRestoreWindow
 //
 // @since Added in GLFW 3.2.
-func MaximizeWindow(window *Window) {
+func MaximizeWindow(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwMaximizeWindow.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -5489,7 +5387,7 @@ var __imp_glfwShowWindow bindlib.PreloadProc
 // @ref glfwHideWindow
 //
 // @since Added in version 3.0.
-func ShowWindow(window *Window) {
+func ShowWindow(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwShowWindow.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -5518,7 +5416,7 @@ var __imp_glfwHideWindow bindlib.PreloadProc
 // @ref glfwShowWindow
 //
 // @since Added in version 3.0.
-func HideWindow(window *Window) {
+func HideWindow(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwHideWindow.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -5569,7 +5467,7 @@ var __imp_glfwFocusWindow bindlib.PreloadProc
 // @ref window_attention
 //
 // @since Added in version 3.2.
-func FocusWindow(window *Window) {
+func FocusWindow(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwFocusWindow.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -5602,7 +5500,7 @@ var __imp_glfwRequestWindowAttention bindlib.PreloadProc
 // @ref window_attention
 //
 // @since Added in version 3.3.
-func RequestWindowAttention(window *Window) {
+func RequestWindowAttention(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwRequestWindowAttention.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -5633,9 +5531,9 @@ var __imp_glfwGetWindowMonitor bindlib.PreloadProc
 // @ref glfwSetWindowMonitor
 //
 // @since Added in version 3.0.
-func GetWindowMonitor(window *Window) *Monitor {
+func GetWindowMonitor(window unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetWindowMonitor.Addr(), bindlib.MarshallSyscall(window))
-	return bindlib.UnmarshallSyscall[*Monitor](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwSetWindowMonitor bindlib.PreloadProc
@@ -5706,7 +5604,7 @@ var __imp_glfwSetWindowMonitor bindlib.PreloadProc
 // @ref glfwSetWindowSize
 //
 // @since Added in version 3.2.
-func SetWindowMonitor(window *Window, monitor *Monitor, xpos int32, ypos int32, width int32, height int32, refreshRate int32) {
+func SetWindowMonitor(window unsafe.Pointer, monitor unsafe.Pointer, xpos int32, ypos int32, width int32, height int32, refreshRate int32) {
 	bindlib.CCall7(__imp_glfwSetWindowMonitor.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(xpos), bindlib.MarshallSyscall(ypos), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(refreshRate))
 }
 
@@ -5764,7 +5662,7 @@ var __imp_glfwGetWindowAttrib bindlib.PreloadProc
 //
 // @since Added in version 3.0.  Replaces `glfwGetWindowParam` and
 // `glfwGetGLVersion`.
-func GetWindowAttrib(window *Window, attrib int32) int32 {
+func GetWindowAttrib(window unsafe.Pointer, attrib int32) int32 {
 	__res := bindlib.CCall2(__imp_glfwGetWindowAttrib.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(attrib))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }
@@ -5833,7 +5731,7 @@ var __imp_glfwSetWindowAttrib bindlib.PreloadProc
 // @ref glfwGetWindowAttrib
 //
 // @since Added in version 3.3.
-func SetWindowAttrib(window *Window, attrib int32, value int32) {
+func SetWindowAttrib(window unsafe.Pointer, attrib int32, value int32) {
 	bindlib.CCall3(__imp_glfwSetWindowAttrib.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(attrib), bindlib.MarshallSyscall(value))
 }
 
@@ -5863,7 +5761,7 @@ var __imp_glfwSetWindowUserPointer bindlib.PreloadProc
 // @ref glfwGetWindowUserPointer
 //
 // @since Added in version 3.0.
-func SetWindowUserPointer(window *Window, pointer unsafe.Pointer) {
+func SetWindowUserPointer(window unsafe.Pointer, pointer unsafe.Pointer) {
 	bindlib.CCall2(__imp_glfwSetWindowUserPointer.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(pointer))
 }
 
@@ -5890,7 +5788,7 @@ var __imp_glfwGetWindowUserPointer bindlib.PreloadProc
 // @ref glfwSetWindowUserPointer
 //
 // @since Added in version 3.0.
-func GetWindowUserPointer(window *Window) unsafe.Pointer {
+func GetWindowUserPointer(window unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetWindowUserPointer.Addr(), bindlib.MarshallSyscall(window))
 	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
@@ -5932,7 +5830,7 @@ var __imp_glfwSetWindowPosCallback bindlib.PreloadProc
 // @ref window_pos
 //
 // @since Added in version 3.0.
-func SetWindowPosCallback(window *Window, callback Windowposfun) Windowposfun {
+func SetWindowPosCallback(window unsafe.Pointer, callback Windowposfun) Windowposfun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowPosCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowposfun](__res)
 }
@@ -5971,7 +5869,7 @@ var __imp_glfwSetWindowSizeCallback bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter and return value.
-func SetWindowSizeCallback(window *Window, callback Windowsizefun) Windowsizefun {
+func SetWindowSizeCallback(window unsafe.Pointer, callback Windowsizefun) Windowsizefun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowSizeCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowsizefun](__res)
 }
@@ -6020,7 +5918,7 @@ var __imp_glfwSetWindowCloseCallback bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter and return value.
-func SetWindowCloseCallback(window *Window, callback Windowclosefun) Windowclosefun {
+func SetWindowCloseCallback(window unsafe.Pointer, callback Windowclosefun) Windowclosefun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowCloseCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowclosefun](__res)
 }
@@ -6062,7 +5960,7 @@ var __imp_glfwSetWindowRefreshCallback bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter and return value.
-func SetWindowRefreshCallback(window *Window, callback Windowrefreshfun) Windowrefreshfun {
+func SetWindowRefreshCallback(window unsafe.Pointer, callback Windowrefreshfun) Windowrefreshfun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowRefreshCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowrefreshfun](__res)
 }
@@ -6103,7 +6001,7 @@ var __imp_glfwSetWindowFocusCallback bindlib.PreloadProc
 // @ref window_focus
 //
 // @since Added in version 3.0.
-func SetWindowFocusCallback(window *Window, callback Windowfocusfun) Windowfocusfun {
+func SetWindowFocusCallback(window unsafe.Pointer, callback Windowfocusfun) Windowfocusfun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowFocusCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowfocusfun](__res)
 }
@@ -6138,7 +6036,7 @@ var __imp_glfwSetWindowIconifyCallback bindlib.PreloadProc
 // @ref window_iconify
 //
 // @since Added in version 3.0.
-func SetWindowIconifyCallback(window *Window, callback Windowiconifyfun) Windowiconifyfun {
+func SetWindowIconifyCallback(window unsafe.Pointer, callback Windowiconifyfun) Windowiconifyfun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowIconifyCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowiconifyfun](__res)
 }
@@ -6173,7 +6071,7 @@ var __imp_glfwSetWindowMaximizeCallback bindlib.PreloadProc
 // @ref window_maximize
 //
 // @since Added in version 3.3.
-func SetWindowMaximizeCallback(window *Window, callback Windowmaximizefun) Windowmaximizefun {
+func SetWindowMaximizeCallback(window unsafe.Pointer, callback Windowmaximizefun) Windowmaximizefun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowMaximizeCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowmaximizefun](__res)
 }
@@ -6208,7 +6106,7 @@ var __imp_glfwSetFramebufferSizeCallback bindlib.PreloadProc
 // @ref window_fbsize
 //
 // @since Added in version 3.0.
-func SetFramebufferSizeCallback(window *Window, callback Framebuffersizefun) Framebuffersizefun {
+func SetFramebufferSizeCallback(window unsafe.Pointer, callback Framebuffersizefun) Framebuffersizefun {
 	__res := bindlib.CCall2(__imp_glfwSetFramebufferSizeCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Framebuffersizefun](__res)
 }
@@ -6246,7 +6144,7 @@ var __imp_glfwSetWindowContentScaleCallback bindlib.PreloadProc
 // @ref glfwGetWindowContentScale
 //
 // @since Added in version 3.3.
-func SetWindowContentScaleCallback(window *Window, callback Windowcontentscalefun) Windowcontentscalefun {
+func SetWindowContentScaleCallback(window unsafe.Pointer, callback Windowcontentscalefun) Windowcontentscalefun {
 	__res := bindlib.CCall2(__imp_glfwSetWindowContentScaleCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Windowcontentscalefun](__res)
 }
@@ -6474,7 +6372,7 @@ var __imp_glfwGetInputMode bindlib.PreloadProc
 // @ref glfwSetInputMode
 //
 // @since Added in version 3.0.
-func GetInputMode(window *Window, mode int32) int32 {
+func GetInputMode(window unsafe.Pointer, mode int32) int32 {
 	__res := bindlib.CCall2(__imp_glfwGetInputMode.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(mode))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }
@@ -6569,7 +6467,7 @@ var __imp_glfwSetInputMode bindlib.PreloadProc
 // @ref glfwGetInputMode
 //
 // @since Added in version 3.0.  Replaces `glfwEnable` and `glfwDisable`.
-func SetInputMode(window *Window, mode int32, value int32) {
+func SetInputMode(window unsafe.Pointer, mode int32, value int32) {
 	bindlib.CCall3(__imp_glfwSetInputMode.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(mode), bindlib.MarshallSyscall(value))
 }
 
@@ -6777,7 +6675,7 @@ var __imp_glfwGetKey bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func GetKey(window *Window, key int32) int32 {
+func GetKey(window unsafe.Pointer, key int32) int32 {
 	__res := bindlib.CCall2(__imp_glfwGetKey.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(key))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }
@@ -6822,7 +6720,7 @@ var __imp_glfwGetMouseButton bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func GetMouseButton(window *Window, button int32) int32 {
+func GetMouseButton(window unsafe.Pointer, button int32) int32 {
 	__res := bindlib.CCall2(__imp_glfwGetMouseButton.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(button))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }
@@ -6867,7 +6765,7 @@ var __imp_glfwGetCursorPos bindlib.PreloadProc
 // @ref glfwSetCursorPos
 //
 // @since Added in version 3.0.  Replaces `glfwGetMousePos`.
-func GetCursorPos(window *Window, xpos *float64, ypos *float64) {
+func GetCursorPos(window unsafe.Pointer, xpos *float64, ypos *float64) {
 	bindlib.CCall3(__imp_glfwGetCursorPos.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(xpos), bindlib.MarshallSyscall(ypos))
 }
 
@@ -6922,7 +6820,7 @@ var __imp_glfwSetCursorPos bindlib.PreloadProc
 // @ref glfwGetCursorPos
 //
 // @since Added in version 3.0.  Replaces `glfwSetMousePos`.
-func SetCursorPos(window *Window, xpos float64, ypos float64) {
+func SetCursorPos(window unsafe.Pointer, xpos float64, ypos float64) {
 	bindlib.CCall3(__imp_glfwSetCursorPos.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(xpos), bindlib.MarshallSyscall(ypos))
 }
 
@@ -6978,9 +6876,9 @@ var __imp_glfwCreateCursor bindlib.PreloadProc
 // @ref glfwCreateStandardCursor
 //
 // @since Added in version 3.1.
-func CreateCursor(image *Image, xhot int32, yhot int32) *Cursor {
+func CreateCursor(image unsafe.Pointer, xhot int32, yhot int32) unsafe.Pointer {
 	__res := bindlib.CCall3(__imp_glfwCreateCursor.Addr(), bindlib.MarshallSyscall(image), bindlib.MarshallSyscall(xhot), bindlib.MarshallSyscall(yhot))
-	return bindlib.UnmarshallSyscall[*Cursor](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwCreateStandardCursor bindlib.PreloadProc
@@ -7072,9 +6970,9 @@ var __imp_glfwCreateStandardCursor bindlib.PreloadProc
 // @ref glfwCreateCursor
 //
 // @since Added in version 3.1.
-func CreateStandardCursor(shape int32) *Cursor {
+func CreateStandardCursor(shape int32) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwCreateStandardCursor.Addr(), bindlib.MarshallSyscall(shape))
-	return bindlib.UnmarshallSyscall[*Cursor](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwDestroyCursor bindlib.PreloadProc
@@ -7108,7 +7006,7 @@ var __imp_glfwDestroyCursor bindlib.PreloadProc
 // @ref glfwCreateCursor
 //
 // @since Added in version 3.1.
-func DestroyCursor(cursor *Cursor) {
+func DestroyCursor(cursor unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwDestroyCursor.Addr(), bindlib.MarshallSyscall(cursor))
 }
 
@@ -7142,7 +7040,7 @@ var __imp_glfwSetCursor bindlib.PreloadProc
 // @ref cursor_object
 //
 // @since Added in version 3.1.
-func SetCursor(window *Window, cursor *Cursor) {
+func SetCursor(window unsafe.Pointer, cursor unsafe.Pointer) {
 	bindlib.CCall2(__imp_glfwSetCursor.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(cursor))
 }
 
@@ -7201,7 +7099,7 @@ var __imp_glfwSetKeyCallback bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter and return value.
-func SetKeyCallback(window *Window, callback Keyfun) Keyfun {
+func SetKeyCallback(window unsafe.Pointer, callback Keyfun) Keyfun {
 	__res := bindlib.CCall2(__imp_glfwSetKeyCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Keyfun](__res)
 }
@@ -7251,7 +7149,7 @@ var __imp_glfwSetCharCallback bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter and return value.
-func SetCharCallback(window *Window, callback Charfun) Charfun {
+func SetCharCallback(window unsafe.Pointer, callback Charfun) Charfun {
 	__res := bindlib.CCall2(__imp_glfwSetCharCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Charfun](__res)
 }
@@ -7302,7 +7200,7 @@ var __imp_glfwSetCharModsCallback bindlib.PreloadProc
 // @ref input_char
 //
 // @since Added in version 3.1.
-func SetCharModsCallback(window *Window, callback Charmodsfun) Charmodsfun {
+func SetCharModsCallback(window unsafe.Pointer, callback Charmodsfun) Charmodsfun {
 	__res := bindlib.CCall2(__imp_glfwSetCharModsCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Charmodsfun](__res)
 }
@@ -7355,7 +7253,7 @@ var __imp_glfwSetMouseButtonCallback bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter and return value.
-func SetMouseButtonCallback(window *Window, callback Mousebuttonfun) Mousebuttonfun {
+func SetMouseButtonCallback(window unsafe.Pointer, callback Mousebuttonfun) Mousebuttonfun {
 	__res := bindlib.CCall2(__imp_glfwSetMouseButtonCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Mousebuttonfun](__res)
 }
@@ -7392,7 +7290,7 @@ var __imp_glfwSetCursorPosCallback bindlib.PreloadProc
 // @ref cursor_pos
 //
 // @since Added in version 3.0.  Replaces `glfwSetMousePosCallback`.
-func SetCursorPosCallback(window *Window, callback Cursorposfun) Cursorposfun {
+func SetCursorPosCallback(window unsafe.Pointer, callback Cursorposfun) Cursorposfun {
 	__res := bindlib.CCall2(__imp_glfwSetCursorPosCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Cursorposfun](__res)
 }
@@ -7428,7 +7326,7 @@ var __imp_glfwSetCursorEnterCallback bindlib.PreloadProc
 // @ref cursor_enter
 //
 // @since Added in version 3.0.
-func SetCursorEnterCallback(window *Window, callback Cursorenterfun) Cursorenterfun {
+func SetCursorEnterCallback(window unsafe.Pointer, callback Cursorenterfun) Cursorenterfun {
 	__res := bindlib.CCall2(__imp_glfwSetCursorEnterCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Cursorenterfun](__res)
 }
@@ -7466,7 +7364,7 @@ var __imp_glfwSetScrollCallback bindlib.PreloadProc
 // @ref scrolling
 //
 // @since Added in version 3.0.  Replaces `glfwSetMouseWheelCallback`.
-func SetScrollCallback(window *Window, callback Scrollfun) Scrollfun {
+func SetScrollCallback(window unsafe.Pointer, callback Scrollfun) Scrollfun {
 	__res := bindlib.CCall2(__imp_glfwSetScrollCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Scrollfun](__res)
 }
@@ -7505,7 +7403,7 @@ var __imp_glfwSetDropCallback bindlib.PreloadProc
 // @ref path_drop
 //
 // @since Added in version 3.1.
-func SetDropCallback(window *Window, callback Dropfun) Dropfun {
+func SetDropCallback(window unsafe.Pointer, callback Dropfun) Dropfun {
 	__res := bindlib.CCall2(__imp_glfwSetDropCallback.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(callback))
 	return bindlib.UnmarshallSyscall[Dropfun](__res)
 }
@@ -8106,7 +8004,7 @@ var __imp_glfwGetGamepadState bindlib.PreloadProc
 // @ref glfwJoystickIsGamepad
 //
 // @since Added in version 3.3.
-func GetGamepadState(jid int32, state *Gamepadstate) int32 {
+func GetGamepadState(jid int32, state unsafe.Pointer) int32 {
 	__res := bindlib.CCall2(__imp_glfwGetGamepadState.Addr(), bindlib.MarshallSyscall(jid), bindlib.MarshallSyscall(state))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }
@@ -8150,7 +8048,7 @@ var __imp_glfwSetClipboardString bindlib.PreloadProc
 // @ref glfwGetClipboardString
 //
 // @since Added in version 3.0.
-func SetClipboardString(window *Window, _string *byte) {
+func SetClipboardString(window unsafe.Pointer, _string *byte) {
 	bindlib.CCall2(__imp_glfwSetClipboardString.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(_string))
 }
 
@@ -8206,7 +8104,7 @@ var __imp_glfwGetClipboardString bindlib.PreloadProc
 // @ref glfwSetClipboardString
 //
 // @since Added in version 3.0.
-func GetClipboardString(window *Window) *byte {
+func GetClipboardString(window unsafe.Pointer) *byte {
 	__res := bindlib.CCall1(__imp_glfwGetClipboardString.Addr(), bindlib.MarshallSyscall(window))
 	return bindlib.UnmarshallSyscall[*byte](__res)
 }
@@ -8406,7 +8304,7 @@ var __imp_glfwMakeContextCurrent bindlib.PreloadProc
 // @ref glfwGetCurrentContext
 //
 // @since Added in version 3.0.
-func MakeContextCurrent(window *Window) {
+func MakeContextCurrent(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwMakeContextCurrent.Addr(), bindlib.MarshallSyscall(window))
 }
 
@@ -8433,9 +8331,9 @@ var __imp_glfwGetCurrentContext bindlib.PreloadProc
 // @ref glfwMakeContextCurrent
 //
 // @since Added in version 3.0.
-func GetCurrentContext() *Window {
+func GetCurrentContext() unsafe.Pointer {
 	__res := bindlib.CCall0(__imp_glfwGetCurrentContext.Addr())
-	return bindlib.UnmarshallSyscall[*Window](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwSwapBuffers bindlib.PreloadProc
@@ -8478,7 +8376,7 @@ var __imp_glfwSwapBuffers bindlib.PreloadProc
 //
 // @glfw3
 // Added window handle parameter.
-func SwapBuffers(window *Window) {
+func SwapBuffers(window unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwSwapBuffers.Addr(), bindlib.MarshallSyscall(window))
 }
 
