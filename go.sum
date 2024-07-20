@@ -6,3 +6,5 @@ github.com/ddkwork/golibrary v0.0.0-20240719073941-9070f73125b4 h1:dAgvibAbx5d1S
 github.com/ddkwork/golibrary v0.0.0-20240719073941-9070f73125b4/go.mod h1:OkAuwYE7f9YhHNged3ZYaNPGYuDZWUIvHOgpe+viFXc=
 github.com/ddkwork/golibrary v0.0.0-20240719101804-bb9b0b79db5f h1:X6+9N3JbhnOhSgiBupaMerRcgnJ0rGHWB60wSvkjhok=
 github.com/ddkwork/golibrary v0.0.0-20240719101804-bb9b0b79db5f/go.mod h1:OkAuwYE7f9YhHNged3ZYaNPGYuDZWUIvHOgpe+viFXc=
+github.com/ddkwork/golibrary v0.0.0-20240720061207-4fbe64ed818c h1:BJojDNxC0ZkEecfK9o7waD7gTmBZOZOXpLUzEBeJfoM=
+github.com/ddkwork/golibrary v0.0.0-20240720061207-4fbe64ed818c/go.mod h1:0IXSq21U+npWvR6HoOux/uKDa0WZd9aCbs9A7A8oKIA=
