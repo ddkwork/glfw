@@ -3,7 +3,7 @@ module github.com/ddkwork/glfw
 go 1.22.5
 
 require (
-	github.com/ddkwork/golibrary v0.0.0-20240720085616-a8fa39506c43
+	github.com/ddkwork/golibrary v0.0.0-20240726111718-088eb10b0626
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/sys v0.22.0
 )
