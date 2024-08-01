@@ -11,20 +11,6 @@ const GengoLibraryName = "glfw"
 
 var GengoLibrary = bindlib.NewLibrary(GengoLibraryName)
 
-type _CrtLocaleDataPublic struct {
-	_LocalePctype     *uint16
-	_LocaleMbCurMax   int32
-	_LocaleLcCodepage uint32
-}
-type _CrtLocalePointers struct {
-	Locinfo unsafe.Pointer
-	Mbcinfo unsafe.Pointer
-}
-type _Mbstatet struct {
-	_Wchar uint64
-	_Byte  uint16
-	_State uint16
-}
 type Vidmode struct {
 	// The width, in screen coordinates, of the video mode.
 	Width int32
@@ -90,1041 +76,623 @@ type Allocator struct {
 	User unsafe.Pointer
 }
 type (
-	_Int128T                             = any
-	_Uint128T                            = any
-	__NSConstantString                   = any
-	SizeT                                = uint64
-	_BuiltinMsVaList                     = *byte
-	_BuiltinVaList                       = *byte
-	UintptrT                             = uint64
-	VaList                               = *byte
-	SizeT                                = uint64
-	PtrdiffT                             = int64
-	IntptrT                              = int64
-	_VcrtBool                            = bool
-	WcharT                               = uint16
-	_CrtBool                             = bool
-	ErrnoT                               = int32
-	WintT                                = uint16
-	WctypeT                              = uint16
-	_Time32T                             = int64
-	TimeT                                = int64
-	_LocaleT                             = unsafe.Pointer
-	MbstateT                             = any
-	RsizeT                               = uint
-	Int8T                                = int8
-	Int16T                               = int16
-	Int32T                               = int32
-	Int64T                               = int64
-	Uint8T                               = uint8
-	Uint16T                              = uint16
-	Uint32T                              = uint32
-	Uint64T                              = uint64
-	IntLeast8T                           = int8
-	IntLeast16T                          = int16
-	IntLeast32T                          = int32
-	IntLeast64T                          = int64
-	UintLeast8T                          = uint8
-	UintLeast16T                         = uint16
-	UintLeast32T                         = uint32
-	UintLeast64T                         = uint64
-	IntFast8T                            = int8
-	IntFast16T                           = int32
-	IntFast32T                           = int32
-	IntFast64T                           = int64
-	UintFast8T                           = uint8
-	UintFast16T                          = uint32
-	UintFast32T                          = uint32
-	UintFast64T                          = uint64
-	IntmaxT                              = int64
-	UintmaxT                             = uint64
-	Enum                                 = uint32
-	Boolean                              = uint8
-	Bitfield                             = uint32
-	Byte                                 = int8
-	Short                                = int16
-	Int                                  = int32
-	Sizei                                = int32
-	Ubyte                                = uint8
-	Ushort                               = uint16
-	Uint                                 = uint32
-	Float                                = float32
-	Clampf                               = float32
-	Double                               = float64
-	Clampd                               = float64
-	Void                                 = void
-	Pfnglarrayelementextproc             = unsafe.Pointer
-	Pfngldrawarraysextproc               = unsafe.Pointer
-	Pfnglvertexpointerextproc            = unsafe.Pointer
-	Pfnglnormalpointerextproc            = unsafe.Pointer
-	Pfnglcolorpointerextproc             = unsafe.Pointer
-	Pfnglindexpointerextproc             = unsafe.Pointer
-	Pfngltexcoordpointerextproc          = unsafe.Pointer
-	Pfngledgeflagpointerextproc          = unsafe.Pointer
-	Pfnglgetpointervextproc              = unsafe.Pointer
-	Pfnglarrayelementarrayextproc        = unsafe.Pointer
-	Pfngldrawrangeelementswinproc        = unsafe.Pointer
-	Pfngladdswaphintrectwinproc          = unsafe.Pointer
-	Pfnglcolortableextproc               = unsafe.Pointer
-	Pfnglcolorsubtableextproc            = unsafe.Pointer
-	Pfnglgetcolortableextproc            = unsafe.Pointer
-	Pfnglgetcolortableparameterivextproc = unsafe.Pointer
-	Pfnglgetcolortableparameterfvextproc = unsafe.Pointer
+	_Int128T           = any
+	_Uint128T          = any
+	__NSConstantString = any
+	SizeT              = uint64
+	_BuiltinMsVaList   = *byte
+	_BuiltinVaList     = *byte
+	Uint8T             = uint8
+	Uint16T            = uint16
+	Uint32T            = uint32
+	Uint64T            = uint64
+	Int8T              = int8
+	Int16T             = int16
+	Int32T             = int32
+	Int64T             = int64
+	Bool               = uint8
+	IntptrT            = *int32
+	// @brief Client API function pointer type.
+	// Generic function pointer used for returning client API function pointers
+	// without forcing a cast from a regular pointer.
+	//
+	// @sa
+	// @ref context_glext
+	//
+	// @sa
+	// @ref glfwGetProcAddress
+	//
+	// @since Added in version 3.0.
+	Glproc = unsafe.Pointer
+	// @brief Vulkan API function pointer type.
+	// Generic function pointer used for returning Vulkan API function pointers
+	// without forcing a cast from a regular pointer.
+	//
+	// @sa
+	// @ref vulkan_proc
+	//
+	// @sa
+	// @ref glfwGetInstanceProcAddress
+	//
+	// @since Added in version 3.2.
+	Vkproc = unsafe.Pointer
+	// @brief The function pointer type for memory allocation callbacks.
+	// This is the function pointer type for memory allocation callbacks.  A memory
+	// allocation callback function has the following signature:
+	//
+	// This function must return either a memory block at least `size` bytes long,
+	// or `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
+	// failures gracefully yet.
+	// This function must support being called during
+	// @ref glfwInit
+	// but before the library is
+	// flagged as initialized, as well as during
+	// @ref glfwTerminate
+	// after the library is no
+	// longer flagged as initialized.
+	// Any memory allocated via this function will be deallocated via the same allocator
+	// during library termination or earlier.
+	// Any memory allocated via this function must be suitably aligned for any object type.
+	// If you are using C99 or earlier, this alignment is platform-dependent but will be the
+	// same as what `malloc` provides.  If you are using C11 or later, this is the value of
+	// `alignof(max_align_t)`.
+	// The size will always be greater than zero.  Allocations of size zero are filtered out
+	// before reaching the custom allocator.
+	// If this function returns `NULL`, GLFW will emit
+	// @ref GLFW_OUT_OF_MEMORY.
+	// This function must not call any GLFW function.
+	//
+	// @param size The minimum size, in bytes, of the memory block.
+	//
+	// @param user The user-defined pointer from the allocator.
+	//
+	// @return The address of the newly allocated memory block, or `NULL` if an
+	// error occurred.
+	//
+	// @pointer
+	// _lifetime The returned memory block must be valid at least until it
+	// is deallocated.
+	//
+	// @reentrancy
+	// This function should not call any GLFW function.
+	//
+	// @thread
+	// _safety This function must support being called from any thread that calls GLFW
+	// functions.
+	//
+	// @sa
+	// @ref init_allocator
+	//
+	// @sa
+	// @ref GLFWallocator
+	//
+	// @since Added in version 3.4.
+	Allocatefun = unsafe.Pointer
+	// @brief The function pointer type for memory reallocation callbacks.
+	// This is the function pointer type for memory reallocation callbacks.
+	// A memory reallocation callback function has the following signature:
+	//
+	// This function must return a memory block at least `size` bytes long, or
+	// `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
+	// failures gracefully yet.
+	// This function must support being called during
+	// @ref glfwInit
+	// but before the library is
+	// flagged as initialized, as well as during
+	// @ref glfwTerminate
+	// after the library is no
+	// longer flagged as initialized.
+	// Any memory allocated via this function will be deallocated via the same allocator
+	// during library termination or earlier.
+	// Any memory allocated via this function must be suitably aligned for any object type.
+	// If you are using C99 or earlier, this alignment is platform-dependent but will be the
+	// same as what `realloc` provides.  If you are using C11 or later, this is the value of
+	// `alignof(max_align_t)`.
+	// The block address will never be `NULL` and the size will always be greater than zero.
+	// Reallocations of a block to size zero are converted into deallocations before reaching
+	// the custom allocator.  Reallocations of `NULL` to a non-zero size are converted into
+	// regular allocations before reaching the custom allocator.
+	// If this function returns `NULL`, GLFW will emit
+	// @ref GLFW_OUT_OF_MEMORY.
+	// This function must not call any GLFW function.
+	//
+	// @param block The address of the memory block to reallocate.
+	//
+	// @param size The new minimum size, in bytes, of the memory block.
+	//
+	// @param user The user-defined pointer from the allocator.
+	//
+	// @return The address of the newly allocated or resized memory block, or
+	// `NULL` if an error occurred.
+	//
+	// @pointer
+	// _lifetime The returned memory block must be valid at least until it
+	// is deallocated.
+	//
+	// @reentrancy
+	// This function should not call any GLFW function.
+	//
+	// @thread
+	// _safety This function must support being called from any thread that calls GLFW
+	// functions.
+	//
+	// @sa
+	// @ref init_allocator
+	//
+	// @sa
+	// @ref GLFWallocator
+	//
+	// @since Added in version 3.4.
+	Reallocatefun = unsafe.Pointer
+	// @brief The function pointer type for memory deallocation callbacks.
+	// This is the function pointer type for memory deallocation callbacks.
+	// A memory deallocation callback function has the following signature:
+	//
+	// This function may deallocate the specified memory block.  This memory block
+	// will have been allocated with the same allocator.
+	// This function must support being called during
+	// @ref glfwInit
+	// but before the library is
+	// flagged as initialized, as well as during
+	// @ref glfwTerminate
+	// after the library is no
+	// longer flagged as initialized.
+	// The block address will never be `NULL`.  Deallocations of `NULL` are filtered out
+	// before reaching the custom allocator.
+	// If this function returns `NULL`, GLFW will emit
+	// @ref GLFW_OUT_OF_MEMORY.
+	// This function must not call any GLFW function.
+	//
+	// @param block The address of the memory block to deallocate.
+	//
+	// @param user The user-defined pointer from the allocator.
+	//
+	// @pointer
+	// _lifetime The specified memory block will not be accessed by GLFW
+	// after this function is called.
+	//
+	// @reentrancy
+	// This function should not call any GLFW function.
+	//
+	// @thread
+	// _safety This function must support being called from any thread that calls GLFW
+	// functions.
+	//
+	// @sa
+	// @ref init_allocator
+	//
+	// @sa
+	// @ref GLFWallocator
+	//
+	// @since Added in version 3.4.
+	Deallocatefun = unsafe.Pointer
+	// @brief The function pointer type for error callbacks.
+	// This is the function pointer type for error callbacks.  An error callback
+	// function has the following signature:
+	//
+	//
+	// @param error_code An [error code](
+	// @ref errors).
+	// Future releases may add
+	// more error codes.
+	//
+	// @param description A UTF-8 encoded string describing the error.
+	//
+	// @pointer
+	// _lifetime The error description string is valid until the callback
+	// function returns.
+	//
+	// @sa
+	// @ref error_handling
+	//
+	// @sa
+	// @ref glfwSetErrorCallback
+	//
+	// @since Added in version 3.0.
+	Errorfun = unsafe.Pointer
+	// @brief The function pointer type for window position callbacks.
+	// This is the function pointer type for window position callbacks.  A window
+	// position callback function has the following signature:
+	//
+	//
+	// @param window The window that was moved.
+	//
+	// @param xpos The new x-coordinate, in screen coordinates, of the
+	// upper-left corner of the content area of the window.
+	//
+	// @param ypos The new y-coordinate, in screen coordinates, of the
+	// upper-left corner of the content area of the window.
+	//
+	// @sa
+	// @ref window_pos
+	//
+	// @sa
+	// @ref glfwSetWindowPosCallback
+	//
+	// @since Added in version 3.0.
+	Windowposfun = unsafe.Pointer
+	// @brief The function pointer type for window size callbacks.
+	// This is the function pointer type for window size callbacks.  A window size
+	// callback function has the following signature:
+	//
+	//
+	// @param window The window that was resized.
+	//
+	// @param width The new width, in screen coordinates, of the window.
+	//
+	// @param height The new height, in screen coordinates, of the window.
+	//
+	// @sa
+	// @ref window_size
+	//
+	// @sa
+	// @ref glfwSetWindowSizeCallback
+	//
+	// @since Added in version 1.0.
+	//
+	// @glfw3
+	// Added window handle parameter.
+	Windowsizefun = unsafe.Pointer
+	// @brief The function pointer type for window close callbacks.
+	// This is the function pointer type for window close callbacks.  A window
+	// close callback function has the following signature:
+	//
+	//
+	// @param window The window that the user attempted to close.
+	//
+	// @sa
+	// @ref window_close
+	//
+	// @sa
+	// @ref glfwSetWindowCloseCallback
+	//
+	// @since Added in version 2.5.
+	//
+	// @glfw3
+	// Added window handle parameter.
+	Windowclosefun = unsafe.Pointer
+	// @brief The function pointer type for window content refresh callbacks.
+	// This is the function pointer type for window content refresh callbacks.
+	// A window content refresh callback function has the following signature:
+	//
+	//
+	// @param window The window whose content needs to be refreshed.
+	//
+	// @sa
+	// @ref window_refresh
+	//
+	// @sa
+	// @ref glfwSetWindowRefreshCallback
+	//
+	// @since Added in version 2.5.
+	//
+	// @glfw3
+	// Added window handle parameter.
+	Windowrefreshfun = unsafe.Pointer
+	// @brief The function pointer type for window focus callbacks.
+	// This is the function pointer type for window focus callbacks.  A window
+	// focus callback function has the following signature:
+	//
+	//
+	// @param window The window that gained or lost input focus.
+	//
+	// @param focused `GLFW_TRUE` if the window was given input focus, or
+	// `GLFW_FALSE` if it lost it.
+	//
+	// @sa
+	// @ref window_focus
+	//
+	// @sa
+	// @ref glfwSetWindowFocusCallback
+	//
+	// @since Added in version 3.0.
+	Windowfocusfun = unsafe.Pointer
+	// @brief The function pointer type for window iconify callbacks.
+	// This is the function pointer type for window iconify callbacks.  A window
+	// iconify callback function has the following signature:
+	//
+	//
+	// @param window The window that was iconified or restored.
+	//
+	// @param iconified `GLFW_TRUE` if the window was iconified, or
+	// `GLFW_FALSE` if it was restored.
+	//
+	// @sa
+	// @ref window_iconify
+	//
+	// @sa
+	// @ref glfwSetWindowIconifyCallback
+	//
+	// @since Added in version 3.0.
+	Windowiconifyfun = unsafe.Pointer
+	// @brief The function pointer type for window maximize callbacks.
+	// This is the function pointer type for window maximize callbacks.  A window
+	// maximize callback function has the following signature:
+	//
+	//
+	// @param window The window that was maximized or restored.
+	//
+	// @param maximized `GLFW_TRUE` if the window was maximized, or
+	// `GLFW_FALSE` if it was restored.
+	//
+	// @sa
+	// @ref window_maximize
+	//
+	// @sa glfwSetWindowMaximizeCallback
+	//
+	// @since Added in version 3.3.
+	Windowmaximizefun = unsafe.Pointer
+	// @brief The function pointer type for framebuffer size callbacks.
+	// This is the function pointer type for framebuffer size callbacks.
+	// A framebuffer size callback function has the following signature:
+	//
+	//
+	// @param window The window whose framebuffer was resized.
+	//
+	// @param width The new width, in pixels, of the framebuffer.
+	//
+	// @param height The new height, in pixels, of the framebuffer.
+	//
+	// @sa
+	// @ref window_fbsize
+	//
+	// @sa
+	// @ref glfwSetFramebufferSizeCallback
+	//
+	// @since Added in version 3.0.
+	Framebuffersizefun = unsafe.Pointer
+	// @brief The function pointer type for window content scale callbacks.
+	// This is the function pointer type for window content scale callbacks.
+	// A window content scale callback function has the following signature:
+	//
+	//
+	// @param window The window whose content scale changed.
+	//
+	// @param xscale The new x-axis content scale of the window.
+	//
+	// @param yscale The new y-axis content scale of the window.
+	//
+	// @sa
+	// @ref window_scale
+	//
+	// @sa
+	// @ref glfwSetWindowContentScaleCallback
+	//
+	// @since Added in version 3.3.
+	Windowcontentscalefun = unsafe.Pointer
+	// @brief The function pointer type for mouse button callbacks.
+	// This is the function pointer type for mouse button callback functions.
+	// A mouse button callback function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param button The [mouse button](
+	// @ref buttons)
+	// that was pressed or
+	// released.
+	//
+	// @param action One of `GLFW_PRESS` or `GLFW_RELEASE`.  Future releases
+	// may add more actions.
+	//
+	// @param mods Bit field describing which [modifier keys](
+	// @ref mods)
+	// were
+	// held down.
+	//
+	// @sa
+	// @ref input_mouse_button
+	//
+	// @sa
+	// @ref glfwSetMouseButtonCallback
+	//
+	// @since Added in version 1.0.
+	//
+	// @glfw3
+	// Added window handle and modifier mask parameters.
+	Mousebuttonfun = unsafe.Pointer
+	// @brief The function pointer type for cursor position callbacks.
+	// This is the function pointer type for cursor position callbacks.  A cursor
+	// position callback function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param xpos The new cursor x-coordinate, relative to the left edge of
+	// the content area.
+	//
+	// @param ypos The new cursor y-coordinate, relative to the top edge of the
+	// content area.
+	//
+	// @sa
+	// @ref cursor_pos
+	//
+	// @sa
+	// @ref glfwSetCursorPosCallback
+	//
+	// @since Added in version 3.0.  Replaces `GLFWmouseposfun`.
+	Cursorposfun = unsafe.Pointer
+	// @brief The function pointer type for cursor enter/leave callbacks.
+	// This is the function pointer type for cursor enter/leave callbacks.
+	// A cursor enter/leave callback function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param entered `GLFW_TRUE` if the cursor entered the window's content
+	// area, or `GLFW_FALSE` if it left it.
+	//
+	// @sa
+	// @ref cursor_enter
+	//
+	// @sa
+	// @ref glfwSetCursorEnterCallback
+	//
+	// @since Added in version 3.0.
+	Cursorenterfun = unsafe.Pointer
+	// @brief The function pointer type for scroll callbacks.
+	// This is the function pointer type for scroll callbacks.  A scroll callback
+	// function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param xoffset The scroll offset along the x-axis.
+	//
+	// @param yoffset The scroll offset along the y-axis.
+	//
+	// @sa
+	// @ref scrolling
+	//
+	// @sa
+	// @ref glfwSetScrollCallback
+	//
+	// @since Added in version 3.0.  Replaces `GLFWmousewheelfun`.
+	Scrollfun = unsafe.Pointer
+	// @brief The function pointer type for keyboard key callbacks.
+	// This is the function pointer type for keyboard key callbacks.  A keyboard
+	// key callback function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param key The [keyboard key](
+	// @ref keys)
+	// that was pressed or released.
+	//
+	// @param scancode The platform-specific scancode of the key.
+	//
+	// @param action `GLFW_PRESS`, `GLFW_RELEASE` or `GLFW_REPEAT`.  Future
+	// releases may add more actions.
+	//
+	// @param mods Bit field describing which [modifier keys](
+	// @ref mods)
+	// were
+	// held down.
+	//
+	// @sa
+	// @ref input_key
+	//
+	// @sa
+	// @ref glfwSetKeyCallback
+	//
+	// @since Added in version 1.0.
+	//
+	// @glfw3
+	// Added window handle, scancode and modifier mask parameters.
+	Keyfun = unsafe.Pointer
+	// @brief The function pointer type for Unicode character callbacks.
+	// This is the function pointer type for Unicode character callbacks.
+	// A Unicode character callback function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param codepoint The Unicode code point of the character.
+	//
+	// @sa
+	// @ref input_char
+	//
+	// @sa
+	// @ref glfwSetCharCallback
+	//
+	// @since Added in version 2.4.
+	//
+	// @glfw3
+	// Added window handle parameter.
+	Charfun = unsafe.Pointer
+	// @brief The function pointer type for Unicode character with modifiers
+	// callbacks.
+	// This is the function pointer type for Unicode character with modifiers
+	// callbacks.  It is called for each input character, regardless of what
+	// modifier keys are held down.  A Unicode character with modifiers callback
+	// function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param codepoint The Unicode code point of the character.
+	//
+	// @param mods Bit field describing which [modifier keys](
+	// @ref mods)
+	// were
+	// held down.
+	//
+	// @sa
+	// @ref input_char
+	//
+	// @sa
+	// @ref glfwSetCharModsCallback
+	//
+	// @deprecated Scheduled for removal in version 4.0.
+	//
+	// @since Added in version 3.1.
+	Charmodsfun = unsafe.Pointer
+	// @brief The function pointer type for path drop callbacks.
+	// This is the function pointer type for path drop callbacks.  A path drop
+	// callback function has the following signature:
+	//
+	//
+	// @param window The window that received the event.
+	//
+	// @param path_count The number of dropped paths.
+	//
+	// @param paths The UTF-8 encoded file and/or directory path names.
+	//
+	// @pointer
+	// _lifetime The path array and its strings are valid until the
+	// callback function returns.
+	//
+	// @sa
+	// @ref path_drop
+	//
+	// @sa
+	// @ref glfwSetDropCallback
+	//
+	// @since Added in version 3.1.
+	Dropfun = unsafe.Pointer
+	// @brief The function pointer type for monitor configuration callbacks.
+	// This is the function pointer type for monitor configuration callbacks.
+	// A monitor callback function has the following signature:
+	//
+	//
+	// @param monitor The monitor that was connected or disconnected.
+	//
+	// @param event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.  Future
+	// releases may add more events.
+	//
+	// @sa
+	// @ref monitor_event
+	//
+	// @sa
+	// @ref glfwSetMonitorCallback
+	//
+	// @since Added in version 3.0.
+	Monitorfun = unsafe.Pointer
+	// @brief The function pointer type for joystick configuration callbacks.
+	// This is the function pointer type for joystick configuration callbacks.
+	// A joystick configuration callback function has the following signature:
+	//
+	//
+	// @param jid The joystick that was connected or disconnected.
+	//
+	// @param event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.  Future
+	// releases may add more events.
+	//
+	// @sa
+	// @ref joystick_event
+	//
+	// @sa
+	// @ref glfwSetJoystickCallback
+	//
+	// @since Added in version 3.2.
+	Joystickfun = unsafe.Pointer
 )
 
-// @brief Client API function pointer type.
-// Generic function pointer used for returning client API function pointers
-// without forcing a cast from a regular pointer.
-//
-// @sa
-// @ref context_glext
-//
-// @sa
-// @ref glfwGetProcAddress
-//
-// @since Added in version 3.0.
-type Glproc = unsafe.Pointer
-
-// @brief Vulkan API function pointer type.
-// Generic function pointer used for returning Vulkan API function pointers
-// without forcing a cast from a regular pointer.
-//
-// @sa
-// @ref vulkan_proc
-//
-// @sa
-// @ref glfwGetInstanceProcAddress
-//
-// @since Added in version 3.2.
-type Vkproc = unsafe.Pointer
-
-// @brief The function pointer type for memory allocation callbacks.
-// This is the function pointer type for memory allocation callbacks.  A memory
-// allocation callback function has the following signature:
-//
-// This function must return either a memory block at least `size` bytes long,
-// or `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
-// failures gracefully yet.
-// This function must support being called during
-// @ref glfwInit
-// but before the library is
-// flagged as initialized, as well as during
-// @ref glfwTerminate
-// after the library is no
-// longer flagged as initialized.
-// Any memory allocated via this function will be deallocated via the same allocator
-// during library termination or earlier.
-// Any memory allocated via this function must be suitably aligned for any object type.
-// If you are using C99 or earlier, this alignment is platform-dependent but will be the
-// same as what `malloc` provides.  If you are using C11 or later, this is the value of
-// `alignof(max_align_t)`.
-// The size will always be greater than zero.  Allocations of size zero are filtered out
-// before reaching the custom allocator.
-// If this function returns `NULL`, GLFW will emit
-// @ref GLFW_OUT_OF_MEMORY.
-// This function must not call any GLFW function.
-//
-// @param size The minimum size, in bytes, of the memory block.
-//
-// @param user The user-defined pointer from the allocator.
-//
-// @return The address of the newly allocated memory block, or `NULL` if an
-// error occurred.
-//
-// @pointer
-// _lifetime The returned memory block must be valid at least until it
-// is deallocated.
-//
-// @reentrancy
-// This function should not call any GLFW function.
-//
-// @thread
-// _safety This function must support being called from any thread that calls GLFW
-// functions.
-//
-// @sa
-// @ref init_allocator
-//
-// @sa
-// @ref GLFWallocator
-//
-// @since Added in version 3.4.
-type Allocatefun = unsafe.Pointer
-
-// @brief The function pointer type for memory reallocation callbacks.
-// This is the function pointer type for memory reallocation callbacks.
-// A memory reallocation callback function has the following signature:
-//
-// This function must return a memory block at least `size` bytes long, or
-// `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
-// failures gracefully yet.
-// This function must support being called during
-// @ref glfwInit
-// but before the library is
-// flagged as initialized, as well as during
-// @ref glfwTerminate
-// after the library is no
-// longer flagged as initialized.
-// Any memory allocated via this function will be deallocated via the same allocator
-// during library termination or earlier.
-// Any memory allocated via this function must be suitably aligned for any object type.
-// If you are using C99 or earlier, this alignment is platform-dependent but will be the
-// same as what `realloc` provides.  If you are using C11 or later, this is the value of
-// `alignof(max_align_t)`.
-// The block address will never be `NULL` and the size will always be greater than zero.
-// Reallocations of a block to size zero are converted into deallocations before reaching
-// the custom allocator.  Reallocations of `NULL` to a non-zero size are converted into
-// regular allocations before reaching the custom allocator.
-// If this function returns `NULL`, GLFW will emit
-// @ref GLFW_OUT_OF_MEMORY.
-// This function must not call any GLFW function.
-//
-// @param block The address of the memory block to reallocate.
-//
-// @param size The new minimum size, in bytes, of the memory block.
-//
-// @param user The user-defined pointer from the allocator.
-//
-// @return The address of the newly allocated or resized memory block, or
-// `NULL` if an error occurred.
-//
-// @pointer
-// _lifetime The returned memory block must be valid at least until it
-// is deallocated.
-//
-// @reentrancy
-// This function should not call any GLFW function.
-//
-// @thread
-// _safety This function must support being called from any thread that calls GLFW
-// functions.
-//
-// @sa
-// @ref init_allocator
-//
-// @sa
-// @ref GLFWallocator
-//
-// @since Added in version 3.4.
-type Reallocatefun = unsafe.Pointer
-
-// @brief The function pointer type for memory deallocation callbacks.
-// This is the function pointer type for memory deallocation callbacks.
-// A memory deallocation callback function has the following signature:
-//
-// This function may deallocate the specified memory block.  This memory block
-// will have been allocated with the same allocator.
-// This function must support being called during
-// @ref glfwInit
-// but before the library is
-// flagged as initialized, as well as during
-// @ref glfwTerminate
-// after the library is no
-// longer flagged as initialized.
-// The block address will never be `NULL`.  Deallocations of `NULL` are filtered out
-// before reaching the custom allocator.
-// If this function returns `NULL`, GLFW will emit
-// @ref GLFW_OUT_OF_MEMORY.
-// This function must not call any GLFW function.
-//
-// @param block The address of the memory block to deallocate.
-//
-// @param user The user-defined pointer from the allocator.
-//
-// @pointer
-// _lifetime The specified memory block will not be accessed by GLFW
-// after this function is called.
-//
-// @reentrancy
-// This function should not call any GLFW function.
-//
-// @thread
-// _safety This function must support being called from any thread that calls GLFW
-// functions.
-//
-// @sa
-// @ref init_allocator
-//
-// @sa
-// @ref GLFWallocator
-//
-// @since Added in version 3.4.
-type Deallocatefun = unsafe.Pointer
-
-// @brief The function pointer type for error callbacks.
-// This is the function pointer type for error callbacks.  An error callback
-// function has the following signature:
-//
-// @param error_code An [error code](
-// @ref errors).
-// Future releases may add
-// more error codes.
-//
-// @param description A UTF-8 encoded string describing the error.
-//
-// @pointer
-// _lifetime The error description string is valid until the callback
-// function returns.
-//
-// @sa
-// @ref error_handling
-//
-// @sa
-// @ref glfwSetErrorCallback
-//
-// @since Added in version 3.0.
-type Errorfun = unsafe.Pointer
-
-// @brief The function pointer type for window position callbacks.
-// This is the function pointer type for window position callbacks.  A window
-// position callback function has the following signature:
-//
-// @param window The window that was moved.
-//
-// @param xpos The new x-coordinate, in screen coordinates, of the
-// upper-left corner of the content area of the window.
-//
-// @param ypos The new y-coordinate, in screen coordinates, of the
-// upper-left corner of the content area of the window.
-//
-// @sa
-// @ref window_pos
-//
-// @sa
-// @ref glfwSetWindowPosCallback
-//
-// @since Added in version 3.0.
-type Windowposfun = unsafe.Pointer
-
-// @brief The function pointer type for window size callbacks.
-// This is the function pointer type for window size callbacks.  A window size
-// callback function has the following signature:
-//
-// @param window The window that was resized.
-//
-// @param width The new width, in screen coordinates, of the window.
-//
-// @param height The new height, in screen coordinates, of the window.
-//
-// @sa
-// @ref window_size
-//
-// @sa
-// @ref glfwSetWindowSizeCallback
-//
-// @since Added in version 1.0.
-//
-// @glfw3
-// Added window handle parameter.
-type Windowsizefun = unsafe.Pointer
-
-// @brief The function pointer type for window close callbacks.
-// This is the function pointer type for window close callbacks.  A window
-// close callback function has the following signature:
-//
-// @param window The window that the user attempted to close.
-//
-// @sa
-// @ref window_close
-//
-// @sa
-// @ref glfwSetWindowCloseCallback
-//
-// @since Added in version 2.5.
-//
-// @glfw3
-// Added window handle parameter.
-type Windowclosefun = unsafe.Pointer
-
-// @brief The function pointer type for window content refresh callbacks.
-// This is the function pointer type for window content refresh callbacks.
-// A window content refresh callback function has the following signature:
-//
-// @param window The window whose content needs to be refreshed.
-//
-// @sa
-// @ref window_refresh
-//
-// @sa
-// @ref glfwSetWindowRefreshCallback
-//
-// @since Added in version 2.5.
-//
-// @glfw3
-// Added window handle parameter.
-type Windowrefreshfun = unsafe.Pointer
-
-// @brief The function pointer type for window focus callbacks.
-// This is the function pointer type for window focus callbacks.  A window
-// focus callback function has the following signature:
-//
-// @param window The window that gained or lost input focus.
-//
-// @param focused `GLFW_TRUE` if the window was given input focus, or
-// `GLFW_FALSE` if it lost it.
-//
-// @sa
-// @ref window_focus
-//
-// @sa
-// @ref glfwSetWindowFocusCallback
-//
-// @since Added in version 3.0.
-type Windowfocusfun = unsafe.Pointer
-
-// @brief The function pointer type for window iconify callbacks.
-// This is the function pointer type for window iconify callbacks.  A window
-// iconify callback function has the following signature:
-//
-// @param window The window that was iconified or restored.
-//
-// @param iconified `GLFW_TRUE` if the window was iconified, or
-// `GLFW_FALSE` if it was restored.
-//
-// @sa
-// @ref window_iconify
-//
-// @sa
-// @ref glfwSetWindowIconifyCallback
-//
-// @since Added in version 3.0.
-type Windowiconifyfun = unsafe.Pointer
-
-// @brief The function pointer type for window maximize callbacks.
-// This is the function pointer type for window maximize callbacks.  A window
-// maximize callback function has the following signature:
-//
-// @param window The window that was maximized or restored.
-//
-// @param maximized `GLFW_TRUE` if the window was maximized, or
-// `GLFW_FALSE` if it was restored.
-//
-// @sa
-// @ref window_maximize
-//
-// @sa glfwSetWindowMaximizeCallback
-//
-// @since Added in version 3.3.
-type Windowmaximizefun = unsafe.Pointer
-
-// @brief The function pointer type for framebuffer size callbacks.
-// This is the function pointer type for framebuffer size callbacks.
-// A framebuffer size callback function has the following signature:
-//
-// @param window The window whose framebuffer was resized.
-//
-// @param width The new width, in pixels, of the framebuffer.
-//
-// @param height The new height, in pixels, of the framebuffer.
-//
-// @sa
-// @ref window_fbsize
-//
-// @sa
-// @ref glfwSetFramebufferSizeCallback
-//
-// @since Added in version 3.0.
-type Framebuffersizefun = unsafe.Pointer
-
-// @brief The function pointer type for window content scale callbacks.
-// This is the function pointer type for window content scale callbacks.
-// A window content scale callback function has the following signature:
-//
-// @param window The window whose content scale changed.
-//
-// @param xscale The new x-axis content scale of the window.
-//
-// @param yscale The new y-axis content scale of the window.
-//
-// @sa
-// @ref window_scale
-//
-// @sa
-// @ref glfwSetWindowContentScaleCallback
-//
-// @since Added in version 3.3.
-type Windowcontentscalefun = unsafe.Pointer
-
-// @brief The function pointer type for mouse button callbacks.
-// This is the function pointer type for mouse button callback functions.
-// A mouse button callback function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param button The [mouse button](
-// @ref buttons)
-// that was pressed or
-// released.
-//
-// @param action One of `GLFW_PRESS` or `GLFW_RELEASE`.  Future releases
-// may add more actions.
-//
-// @param mods Bit field describing which [modifier keys](
-// @ref mods)
-// were
-// held down.
-//
-// @sa
-// @ref input_mouse_button
-//
-// @sa
-// @ref glfwSetMouseButtonCallback
-//
-// @since Added in version 1.0.
-//
-// @glfw3
-// Added window handle and modifier mask parameters.
-type Mousebuttonfun = unsafe.Pointer
-
-// @brief The function pointer type for cursor position callbacks.
-// This is the function pointer type for cursor position callbacks.  A cursor
-// position callback function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param xpos The new cursor x-coordinate, relative to the left edge of
-// the content area.
-//
-// @param ypos The new cursor y-coordinate, relative to the top edge of the
-// content area.
-//
-// @sa
-// @ref cursor_pos
-//
-// @sa
-// @ref glfwSetCursorPosCallback
-//
-// @since Added in version 3.0.  Replaces `GLFWmouseposfun`.
-type Cursorposfun = unsafe.Pointer
-
-// @brief The function pointer type for cursor enter/leave callbacks.
-// This is the function pointer type for cursor enter/leave callbacks.
-// A cursor enter/leave callback function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param entered `GLFW_TRUE` if the cursor entered the window's content
-// area, or `GLFW_FALSE` if it left it.
-//
-// @sa
-// @ref cursor_enter
-//
-// @sa
-// @ref glfwSetCursorEnterCallback
-//
-// @since Added in version 3.0.
-type Cursorenterfun = unsafe.Pointer
-
-// @brief The function pointer type for scroll callbacks.
-// This is the function pointer type for scroll callbacks.  A scroll callback
-// function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param xoffset The scroll offset along the x-axis.
-//
-// @param yoffset The scroll offset along the y-axis.
-//
-// @sa
-// @ref scrolling
-//
-// @sa
-// @ref glfwSetScrollCallback
-//
-// @since Added in version 3.0.  Replaces `GLFWmousewheelfun`.
-type Scrollfun = unsafe.Pointer
-
-// @brief The function pointer type for keyboard key callbacks.
-// This is the function pointer type for keyboard key callbacks.  A keyboard
-// key callback function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param key The [keyboard key](
-// @ref keys)
-// that was pressed or released.
-//
-// @param scancode The platform-specific scancode of the key.
-//
-// @param action `GLFW_PRESS`, `GLFW_RELEASE` or `GLFW_REPEAT`.  Future
-// releases may add more actions.
-//
-// @param mods Bit field describing which [modifier keys](
-// @ref mods)
-// were
-// held down.
-//
-// @sa
-// @ref input_key
-//
-// @sa
-// @ref glfwSetKeyCallback
-//
-// @since Added in version 1.0.
-//
-// @glfw3
-// Added window handle, scancode and modifier mask parameters.
-type Keyfun = unsafe.Pointer
-
-// @brief The function pointer type for Unicode character callbacks.
-// This is the function pointer type for Unicode character callbacks.
-// A Unicode character callback function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param codepoint The Unicode code point of the character.
-//
-// @sa
-// @ref input_char
-//
-// @sa
-// @ref glfwSetCharCallback
-//
-// @since Added in version 2.4.
-//
-// @glfw3
-// Added window handle parameter.
-type Charfun = unsafe.Pointer
-
-// @brief The function pointer type for Unicode character with modifiers
-// callbacks.
-// This is the function pointer type for Unicode character with modifiers
-// callbacks.  It is called for each input character, regardless of what
-// modifier keys are held down.  A Unicode character with modifiers callback
-// function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param codepoint The Unicode code point of the character.
-//
-// @param mods Bit field describing which [modifier keys](
-// @ref mods)
-// were
-// held down.
-//
-// @sa
-// @ref input_char
-//
-// @sa
-// @ref glfwSetCharModsCallback
-//
-// @deprecated Scheduled for removal in version 4.0.
-//
-// @since Added in version 3.1.
-type Charmodsfun = unsafe.Pointer
-
-// @brief The function pointer type for path drop callbacks.
-// This is the function pointer type for path drop callbacks.  A path drop
-// callback function has the following signature:
-//
-// @param window The window that received the event.
-//
-// @param path_count The number of dropped paths.
-//
-// @param paths The UTF-8 encoded file and/or directory path names.
-//
-// @pointer
-// _lifetime The path array and its strings are valid until the
-// callback function returns.
-//
-// @sa
-// @ref path_drop
-//
-// @sa
-// @ref glfwSetDropCallback
-//
-// @since Added in version 3.1.
-type Dropfun = unsafe.Pointer
-
-// @brief The function pointer type for monitor configuration callbacks.
-// This is the function pointer type for monitor configuration callbacks.
-// A monitor callback function has the following signature:
-//
-// @param monitor The monitor that was connected or disconnected.
-//
-// @param event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.  Future
-// releases may add more events.
-//
-// @sa
-// @ref monitor_event
-//
-// @sa
-// @ref glfwSetMonitorCallback
-//
-// @since Added in version 3.0.
-type Monitorfun = unsafe.Pointer
-
-// @brief The function pointer type for joystick configuration callbacks.
-// This is the function pointer type for joystick configuration callbacks.
-// A joystick configuration callback function has the following signature:
-//
-// @param jid The joystick that was connected or disconnected.
-//
-// @param event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.  Future
-// releases may add more events.
-//
-// @sa
-// @ref joystick_event
-//
-// @sa
-// @ref glfwSetJoystickCallback
-//
-// @since Added in version 3.2.
-type Joystickfun = unsafe.Pointer
-
-var __imp___va_start bindlib.PreloadProc
+var __imp_glfwInit bindlib.PreloadProc
 
 // Gengo init function.
 func init() {
-	__imp___va_start = GengoLibrary.ImportNow("__va_start")
-	__imp___va_start = GengoLibrary.ImportNow("__va_start")
-	__imp___security_init_cookie = GengoLibrary.ImportNow("__security_init_cookie")
-	__imp___security_check_cookie = GengoLibrary.ImportNow("__security_check_cookie")
-	__imp___report_gsfailure = GengoLibrary.ImportNow("__report_gsfailure")
-	__imp__invalid_parameter_noinfo = GengoLibrary.ImportNow("_invalid_parameter_noinfo")
-	__imp__invalid_parameter_noinfo_noreturn = GengoLibrary.ImportNow("_invalid_parameter_noinfo_noreturn")
-	__imp__invoke_watson = GengoLibrary.ImportNow("_invoke_watson")
-	__imp__errno = GengoLibrary.ImportNow("_errno")
-	__imp__set_errno = GengoLibrary.ImportNow("_set_errno")
-	__imp__get_errno = GengoLibrary.ImportNow("_get_errno")
-	__imp___threadid = GengoLibrary.ImportNow("__threadid")
-	__imp___threadhandle = GengoLibrary.ImportNow("__threadhandle")
-	__imp_glAccum = GengoLibrary.ImportNow("glAccum")
-	__imp_glAlphaFunc = GengoLibrary.ImportNow("glAlphaFunc")
-	__imp_glAreTexturesResident = GengoLibrary.ImportNow("glAreTexturesResident")
-	__imp_glArrayElement = GengoLibrary.ImportNow("glArrayElement")
-	__imp_glBegin = GengoLibrary.ImportNow("glBegin")
-	__imp_glBindTexture = GengoLibrary.ImportNow("glBindTexture")
-	__imp_glBitmap = GengoLibrary.ImportNow("glBitmap")
-	__imp_glBlendFunc = GengoLibrary.ImportNow("glBlendFunc")
-	__imp_glCallList = GengoLibrary.ImportNow("glCallList")
-	__imp_glCallLists = GengoLibrary.ImportNow("glCallLists")
-	__imp_glClear = GengoLibrary.ImportNow("glClear")
-	__imp_glClearAccum = GengoLibrary.ImportNow("glClearAccum")
-	__imp_glClearColor = GengoLibrary.ImportNow("glClearColor")
-	__imp_glClearDepth = GengoLibrary.ImportNow("glClearDepth")
-	__imp_glClearIndex = GengoLibrary.ImportNow("glClearIndex")
-	__imp_glClearStencil = GengoLibrary.ImportNow("glClearStencil")
-	__imp_glClipPlane = GengoLibrary.ImportNow("glClipPlane")
-	__imp_glColor3b = GengoLibrary.ImportNow("glColor3b")
-	__imp_glColor3bv = GengoLibrary.ImportNow("glColor3bv")
-	__imp_glColor3d = GengoLibrary.ImportNow("glColor3d")
-	__imp_glColor3dv = GengoLibrary.ImportNow("glColor3dv")
-	__imp_glColor3f = GengoLibrary.ImportNow("glColor3f")
-	__imp_glColor3fv = GengoLibrary.ImportNow("glColor3fv")
-	__imp_glColor3i = GengoLibrary.ImportNow("glColor3i")
-	__imp_glColor3iv = GengoLibrary.ImportNow("glColor3iv")
-	__imp_glColor3s = GengoLibrary.ImportNow("glColor3s")
-	__imp_glColor3sv = GengoLibrary.ImportNow("glColor3sv")
-	__imp_glColor3ub = GengoLibrary.ImportNow("glColor3ub")
-	__imp_glColor3ubv = GengoLibrary.ImportNow("glColor3ubv")
-	__imp_glColor3ui = GengoLibrary.ImportNow("glColor3ui")
-	__imp_glColor3uiv = GengoLibrary.ImportNow("glColor3uiv")
-	__imp_glColor3us = GengoLibrary.ImportNow("glColor3us")
-	__imp_glColor3usv = GengoLibrary.ImportNow("glColor3usv")
-	__imp_glColor4b = GengoLibrary.ImportNow("glColor4b")
-	__imp_glColor4bv = GengoLibrary.ImportNow("glColor4bv")
-	__imp_glColor4d = GengoLibrary.ImportNow("glColor4d")
-	__imp_glColor4dv = GengoLibrary.ImportNow("glColor4dv")
-	__imp_glColor4f = GengoLibrary.ImportNow("glColor4f")
-	__imp_glColor4fv = GengoLibrary.ImportNow("glColor4fv")
-	__imp_glColor4i = GengoLibrary.ImportNow("glColor4i")
-	__imp_glColor4iv = GengoLibrary.ImportNow("glColor4iv")
-	__imp_glColor4s = GengoLibrary.ImportNow("glColor4s")
-	__imp_glColor4sv = GengoLibrary.ImportNow("glColor4sv")
-	__imp_glColor4ub = GengoLibrary.ImportNow("glColor4ub")
-	__imp_glColor4ubv = GengoLibrary.ImportNow("glColor4ubv")
-	__imp_glColor4ui = GengoLibrary.ImportNow("glColor4ui")
-	__imp_glColor4uiv = GengoLibrary.ImportNow("glColor4uiv")
-	__imp_glColor4us = GengoLibrary.ImportNow("glColor4us")
-	__imp_glColor4usv = GengoLibrary.ImportNow("glColor4usv")
-	__imp_glColorMask = GengoLibrary.ImportNow("glColorMask")
-	__imp_glColorMaterial = GengoLibrary.ImportNow("glColorMaterial")
-	__imp_glColorPointer = GengoLibrary.ImportNow("glColorPointer")
-	__imp_glCopyPixels = GengoLibrary.ImportNow("glCopyPixels")
-	__imp_glCopyTexImage1D = GengoLibrary.ImportNow("glCopyTexImage1D")
-	__imp_glCopyTexImage2D = GengoLibrary.ImportNow("glCopyTexImage2D")
-	__imp_glCopyTexSubImage1D = GengoLibrary.ImportNow("glCopyTexSubImage1D")
-	__imp_glCopyTexSubImage2D = GengoLibrary.ImportNow("glCopyTexSubImage2D")
-	__imp_glCullFace = GengoLibrary.ImportNow("glCullFace")
-	__imp_glDeleteLists = GengoLibrary.ImportNow("glDeleteLists")
-	__imp_glDeleteTextures = GengoLibrary.ImportNow("glDeleteTextures")
-	__imp_glDepthFunc = GengoLibrary.ImportNow("glDepthFunc")
-	__imp_glDepthMask = GengoLibrary.ImportNow("glDepthMask")
-	__imp_glDepthRange = GengoLibrary.ImportNow("glDepthRange")
-	__imp_glDisable = GengoLibrary.ImportNow("glDisable")
-	__imp_glDisableClientState = GengoLibrary.ImportNow("glDisableClientState")
-	__imp_glDrawArrays = GengoLibrary.ImportNow("glDrawArrays")
-	__imp_glDrawBuffer = GengoLibrary.ImportNow("glDrawBuffer")
-	__imp_glDrawElements = GengoLibrary.ImportNow("glDrawElements")
-	__imp_glDrawPixels = GengoLibrary.ImportNow("glDrawPixels")
-	__imp_glEdgeFlag = GengoLibrary.ImportNow("glEdgeFlag")
-	__imp_glEdgeFlagPointer = GengoLibrary.ImportNow("glEdgeFlagPointer")
-	__imp_glEdgeFlagv = GengoLibrary.ImportNow("glEdgeFlagv")
-	__imp_glEnable = GengoLibrary.ImportNow("glEnable")
-	__imp_glEnableClientState = GengoLibrary.ImportNow("glEnableClientState")
-	__imp_glEnd = GengoLibrary.ImportNow("glEnd")
-	__imp_glEndList = GengoLibrary.ImportNow("glEndList")
-	__imp_glEvalCoord1d = GengoLibrary.ImportNow("glEvalCoord1d")
-	__imp_glEvalCoord1dv = GengoLibrary.ImportNow("glEvalCoord1dv")
-	__imp_glEvalCoord1f = GengoLibrary.ImportNow("glEvalCoord1f")
-	__imp_glEvalCoord1fv = GengoLibrary.ImportNow("glEvalCoord1fv")
-	__imp_glEvalCoord2d = GengoLibrary.ImportNow("glEvalCoord2d")
-	__imp_glEvalCoord2dv = GengoLibrary.ImportNow("glEvalCoord2dv")
-	__imp_glEvalCoord2f = GengoLibrary.ImportNow("glEvalCoord2f")
-	__imp_glEvalCoord2fv = GengoLibrary.ImportNow("glEvalCoord2fv")
-	__imp_glEvalMesh1 = GengoLibrary.ImportNow("glEvalMesh1")
-	__imp_glEvalMesh2 = GengoLibrary.ImportNow("glEvalMesh2")
-	__imp_glEvalPoint1 = GengoLibrary.ImportNow("glEvalPoint1")
-	__imp_glEvalPoint2 = GengoLibrary.ImportNow("glEvalPoint2")
-	__imp_glFeedbackBuffer = GengoLibrary.ImportNow("glFeedbackBuffer")
-	__imp_glFinish = GengoLibrary.ImportNow("glFinish")
-	__imp_glFlush = GengoLibrary.ImportNow("glFlush")
-	__imp_glFogf = GengoLibrary.ImportNow("glFogf")
-	__imp_glFogfv = GengoLibrary.ImportNow("glFogfv")
-	__imp_glFogi = GengoLibrary.ImportNow("glFogi")
-	__imp_glFogiv = GengoLibrary.ImportNow("glFogiv")
-	__imp_glFrontFace = GengoLibrary.ImportNow("glFrontFace")
-	__imp_glFrustum = GengoLibrary.ImportNow("glFrustum")
-	__imp_glGenLists = GengoLibrary.ImportNow("glGenLists")
-	__imp_glGenTextures = GengoLibrary.ImportNow("glGenTextures")
-	__imp_glGetBooleanv = GengoLibrary.ImportNow("glGetBooleanv")
-	__imp_glGetClipPlane = GengoLibrary.ImportNow("glGetClipPlane")
-	__imp_glGetDoublev = GengoLibrary.ImportNow("glGetDoublev")
-	__imp_glGetError = GengoLibrary.ImportNow("glGetError")
-	__imp_glGetFloatv = GengoLibrary.ImportNow("glGetFloatv")
-	__imp_glGetIntegerv = GengoLibrary.ImportNow("glGetIntegerv")
-	__imp_glGetLightfv = GengoLibrary.ImportNow("glGetLightfv")
-	__imp_glGetLightiv = GengoLibrary.ImportNow("glGetLightiv")
-	__imp_glGetMapdv = GengoLibrary.ImportNow("glGetMapdv")
-	__imp_glGetMapfv = GengoLibrary.ImportNow("glGetMapfv")
-	__imp_glGetMapiv = GengoLibrary.ImportNow("glGetMapiv")
-	__imp_glGetMaterialfv = GengoLibrary.ImportNow("glGetMaterialfv")
-	__imp_glGetMaterialiv = GengoLibrary.ImportNow("glGetMaterialiv")
-	__imp_glGetPixelMapfv = GengoLibrary.ImportNow("glGetPixelMapfv")
-	__imp_glGetPixelMapuiv = GengoLibrary.ImportNow("glGetPixelMapuiv")
-	__imp_glGetPixelMapusv = GengoLibrary.ImportNow("glGetPixelMapusv")
-	__imp_glGetPointerv = GengoLibrary.ImportNow("glGetPointerv")
-	__imp_glGetPolygonStipple = GengoLibrary.ImportNow("glGetPolygonStipple")
-	__imp_glGetString = GengoLibrary.ImportNow("glGetString")
-	__imp_glGetTexEnvfv = GengoLibrary.ImportNow("glGetTexEnvfv")
-	__imp_glGetTexEnviv = GengoLibrary.ImportNow("glGetTexEnviv")
-	__imp_glGetTexGendv = GengoLibrary.ImportNow("glGetTexGendv")
-	__imp_glGetTexGenfv = GengoLibrary.ImportNow("glGetTexGenfv")
-	__imp_glGetTexGeniv = GengoLibrary.ImportNow("glGetTexGeniv")
-	__imp_glGetTexImage = GengoLibrary.ImportNow("glGetTexImage")
-	__imp_glGetTexLevelParameterfv = GengoLibrary.ImportNow("glGetTexLevelParameterfv")
-	__imp_glGetTexLevelParameteriv = GengoLibrary.ImportNow("glGetTexLevelParameteriv")
-	__imp_glGetTexParameterfv = GengoLibrary.ImportNow("glGetTexParameterfv")
-	__imp_glGetTexParameteriv = GengoLibrary.ImportNow("glGetTexParameteriv")
-	__imp_glHint = GengoLibrary.ImportNow("glHint")
-	__imp_glIndexMask = GengoLibrary.ImportNow("glIndexMask")
-	__imp_glIndexPointer = GengoLibrary.ImportNow("glIndexPointer")
-	__imp_glIndexd = GengoLibrary.ImportNow("glIndexd")
-	__imp_glIndexdv = GengoLibrary.ImportNow("glIndexdv")
-	__imp_glIndexf = GengoLibrary.ImportNow("glIndexf")
-	__imp_glIndexfv = GengoLibrary.ImportNow("glIndexfv")
-	__imp_glIndexi = GengoLibrary.ImportNow("glIndexi")
-	__imp_glIndexiv = GengoLibrary.ImportNow("glIndexiv")
-	__imp_glIndexs = GengoLibrary.ImportNow("glIndexs")
-	__imp_glIndexsv = GengoLibrary.ImportNow("glIndexsv")
-	__imp_glIndexub = GengoLibrary.ImportNow("glIndexub")
-	__imp_glIndexubv = GengoLibrary.ImportNow("glIndexubv")
-	__imp_glInitNames = GengoLibrary.ImportNow("glInitNames")
-	__imp_glInterleavedArrays = GengoLibrary.ImportNow("glInterleavedArrays")
-	__imp_glIsEnabled = GengoLibrary.ImportNow("glIsEnabled")
-	__imp_glIsList = GengoLibrary.ImportNow("glIsList")
-	__imp_glIsTexture = GengoLibrary.ImportNow("glIsTexture")
-	__imp_glLightModelf = GengoLibrary.ImportNow("glLightModelf")
-	__imp_glLightModelfv = GengoLibrary.ImportNow("glLightModelfv")
-	__imp_glLightModeli = GengoLibrary.ImportNow("glLightModeli")
-	__imp_glLightModeliv = GengoLibrary.ImportNow("glLightModeliv")
-	__imp_glLightf = GengoLibrary.ImportNow("glLightf")
-	__imp_glLightfv = GengoLibrary.ImportNow("glLightfv")
-	__imp_glLighti = GengoLibrary.ImportNow("glLighti")
-	__imp_glLightiv = GengoLibrary.ImportNow("glLightiv")
-	__imp_glLineStipple = GengoLibrary.ImportNow("glLineStipple")
-	__imp_glLineWidth = GengoLibrary.ImportNow("glLineWidth")
-	__imp_glListBase = GengoLibrary.ImportNow("glListBase")
-	__imp_glLoadIdentity = GengoLibrary.ImportNow("glLoadIdentity")
-	__imp_glLoadMatrixd = GengoLibrary.ImportNow("glLoadMatrixd")
-	__imp_glLoadMatrixf = GengoLibrary.ImportNow("glLoadMatrixf")
-	__imp_glLoadName = GengoLibrary.ImportNow("glLoadName")
-	__imp_glLogicOp = GengoLibrary.ImportNow("glLogicOp")
-	__imp_glMap1d = GengoLibrary.ImportNow("glMap1d")
-	__imp_glMap1f = GengoLibrary.ImportNow("glMap1f")
-	__imp_glMap2d = GengoLibrary.ImportNow("glMap2d")
-	__imp_glMap2f = GengoLibrary.ImportNow("glMap2f")
-	__imp_glMapGrid1d = GengoLibrary.ImportNow("glMapGrid1d")
-	__imp_glMapGrid1f = GengoLibrary.ImportNow("glMapGrid1f")
-	__imp_glMapGrid2d = GengoLibrary.ImportNow("glMapGrid2d")
-	__imp_glMapGrid2f = GengoLibrary.ImportNow("glMapGrid2f")
-	__imp_glMaterialf = GengoLibrary.ImportNow("glMaterialf")
-	__imp_glMaterialfv = GengoLibrary.ImportNow("glMaterialfv")
-	__imp_glMateriali = GengoLibrary.ImportNow("glMateriali")
-	__imp_glMaterialiv = GengoLibrary.ImportNow("glMaterialiv")
-	__imp_glMatrixMode = GengoLibrary.ImportNow("glMatrixMode")
-	__imp_glMultMatrixd = GengoLibrary.ImportNow("glMultMatrixd")
-	__imp_glMultMatrixf = GengoLibrary.ImportNow("glMultMatrixf")
-	__imp_glNewList = GengoLibrary.ImportNow("glNewList")
-	__imp_glNormal3b = GengoLibrary.ImportNow("glNormal3b")
-	__imp_glNormal3bv = GengoLibrary.ImportNow("glNormal3bv")
-	__imp_glNormal3d = GengoLibrary.ImportNow("glNormal3d")
-	__imp_glNormal3dv = GengoLibrary.ImportNow("glNormal3dv")
-	__imp_glNormal3f = GengoLibrary.ImportNow("glNormal3f")
-	__imp_glNormal3fv = GengoLibrary.ImportNow("glNormal3fv")
-	__imp_glNormal3i = GengoLibrary.ImportNow("glNormal3i")
-	__imp_glNormal3iv = GengoLibrary.ImportNow("glNormal3iv")
-	__imp_glNormal3s = GengoLibrary.ImportNow("glNormal3s")
-	__imp_glNormal3sv = GengoLibrary.ImportNow("glNormal3sv")
-	__imp_glNormalPointer = GengoLibrary.ImportNow("glNormalPointer")
-	__imp_glOrtho = GengoLibrary.ImportNow("glOrtho")
-	__imp_glPassThrough = GengoLibrary.ImportNow("glPassThrough")
-	__imp_glPixelMapfv = GengoLibrary.ImportNow("glPixelMapfv")
-	__imp_glPixelMapuiv = GengoLibrary.ImportNow("glPixelMapuiv")
-	__imp_glPixelMapusv = GengoLibrary.ImportNow("glPixelMapusv")
-	__imp_glPixelStoref = GengoLibrary.ImportNow("glPixelStoref")
-	__imp_glPixelStorei = GengoLibrary.ImportNow("glPixelStorei")
-	__imp_glPixelTransferf = GengoLibrary.ImportNow("glPixelTransferf")
-	__imp_glPixelTransferi = GengoLibrary.ImportNow("glPixelTransferi")
-	__imp_glPixelZoom = GengoLibrary.ImportNow("glPixelZoom")
-	__imp_glPointSize = GengoLibrary.ImportNow("glPointSize")
-	__imp_glPolygonMode = GengoLibrary.ImportNow("glPolygonMode")
-	__imp_glPolygonOffset = GengoLibrary.ImportNow("glPolygonOffset")
-	__imp_glPolygonStipple = GengoLibrary.ImportNow("glPolygonStipple")
-	__imp_glPopAttrib = GengoLibrary.ImportNow("glPopAttrib")
-	__imp_glPopClientAttrib = GengoLibrary.ImportNow("glPopClientAttrib")
-	__imp_glPopMatrix = GengoLibrary.ImportNow("glPopMatrix")
-	__imp_glPopName = GengoLibrary.ImportNow("glPopName")
-	__imp_glPrioritizeTextures = GengoLibrary.ImportNow("glPrioritizeTextures")
-	__imp_glPushAttrib = GengoLibrary.ImportNow("glPushAttrib")
-	__imp_glPushClientAttrib = GengoLibrary.ImportNow("glPushClientAttrib")
-	__imp_glPushMatrix = GengoLibrary.ImportNow("glPushMatrix")
-	__imp_glPushName = GengoLibrary.ImportNow("glPushName")
-	__imp_glRasterPos2d = GengoLibrary.ImportNow("glRasterPos2d")
-	__imp_glRasterPos2dv = GengoLibrary.ImportNow("glRasterPos2dv")
-	__imp_glRasterPos2f = GengoLibrary.ImportNow("glRasterPos2f")
-	__imp_glRasterPos2fv = GengoLibrary.ImportNow("glRasterPos2fv")
-	__imp_glRasterPos2i = GengoLibrary.ImportNow("glRasterPos2i")
-	__imp_glRasterPos2iv = GengoLibrary.ImportNow("glRasterPos2iv")
-	__imp_glRasterPos2s = GengoLibrary.ImportNow("glRasterPos2s")
-	__imp_glRasterPos2sv = GengoLibrary.ImportNow("glRasterPos2sv")
-	__imp_glRasterPos3d = GengoLibrary.ImportNow("glRasterPos3d")
-	__imp_glRasterPos3dv = GengoLibrary.ImportNow("glRasterPos3dv")
-	__imp_glRasterPos3f = GengoLibrary.ImportNow("glRasterPos3f")
-	__imp_glRasterPos3fv = GengoLibrary.ImportNow("glRasterPos3fv")
-	__imp_glRasterPos3i = GengoLibrary.ImportNow("glRasterPos3i")
-	__imp_glRasterPos3iv = GengoLibrary.ImportNow("glRasterPos3iv")
-	__imp_glRasterPos3s = GengoLibrary.ImportNow("glRasterPos3s")
-	__imp_glRasterPos3sv = GengoLibrary.ImportNow("glRasterPos3sv")
-	__imp_glRasterPos4d = GengoLibrary.ImportNow("glRasterPos4d")
-	__imp_glRasterPos4dv = GengoLibrary.ImportNow("glRasterPos4dv")
-	__imp_glRasterPos4f = GengoLibrary.ImportNow("glRasterPos4f")
-	__imp_glRasterPos4fv = GengoLibrary.ImportNow("glRasterPos4fv")
-	__imp_glRasterPos4i = GengoLibrary.ImportNow("glRasterPos4i")
-	__imp_glRasterPos4iv = GengoLibrary.ImportNow("glRasterPos4iv")
-	__imp_glRasterPos4s = GengoLibrary.ImportNow("glRasterPos4s")
-	__imp_glRasterPos4sv = GengoLibrary.ImportNow("glRasterPos4sv")
-	__imp_glReadBuffer = GengoLibrary.ImportNow("glReadBuffer")
-	__imp_glReadPixels = GengoLibrary.ImportNow("glReadPixels")
-	__imp_glRectd = GengoLibrary.ImportNow("glRectd")
-	__imp_glRectdv = GengoLibrary.ImportNow("glRectdv")
-	__imp_glRectf = GengoLibrary.ImportNow("glRectf")
-	__imp_glRectfv = GengoLibrary.ImportNow("glRectfv")
-	__imp_glRecti = GengoLibrary.ImportNow("glRecti")
-	__imp_glRectiv = GengoLibrary.ImportNow("glRectiv")
-	__imp_glRects = GengoLibrary.ImportNow("glRects")
-	__imp_glRectsv = GengoLibrary.ImportNow("glRectsv")
-	__imp_glRenderMode = GengoLibrary.ImportNow("glRenderMode")
-	__imp_glRotated = GengoLibrary.ImportNow("glRotated")
-	__imp_glRotatef = GengoLibrary.ImportNow("glRotatef")
-	__imp_glScaled = GengoLibrary.ImportNow("glScaled")
-	__imp_glScalef = GengoLibrary.ImportNow("glScalef")
-	__imp_glScissor = GengoLibrary.ImportNow("glScissor")
-	__imp_glSelectBuffer = GengoLibrary.ImportNow("glSelectBuffer")
-	__imp_glShadeModel = GengoLibrary.ImportNow("glShadeModel")
-	__imp_glStencilFunc = GengoLibrary.ImportNow("glStencilFunc")
-	__imp_glStencilMask = GengoLibrary.ImportNow("glStencilMask")
-	__imp_glStencilOp = GengoLibrary.ImportNow("glStencilOp")
-	__imp_glTexCoord1d = GengoLibrary.ImportNow("glTexCoord1d")
-	__imp_glTexCoord1dv = GengoLibrary.ImportNow("glTexCoord1dv")
-	__imp_glTexCoord1f = GengoLibrary.ImportNow("glTexCoord1f")
-	__imp_glTexCoord1fv = GengoLibrary.ImportNow("glTexCoord1fv")
-	__imp_glTexCoord1i = GengoLibrary.ImportNow("glTexCoord1i")
-	__imp_glTexCoord1iv = GengoLibrary.ImportNow("glTexCoord1iv")
-	__imp_glTexCoord1s = GengoLibrary.ImportNow("glTexCoord1s")
-	__imp_glTexCoord1sv = GengoLibrary.ImportNow("glTexCoord1sv")
-	__imp_glTexCoord2d = GengoLibrary.ImportNow("glTexCoord2d")
-	__imp_glTexCoord2dv = GengoLibrary.ImportNow("glTexCoord2dv")
-	__imp_glTexCoord2f = GengoLibrary.ImportNow("glTexCoord2f")
-	__imp_glTexCoord2fv = GengoLibrary.ImportNow("glTexCoord2fv")
-	__imp_glTexCoord2i = GengoLibrary.ImportNow("glTexCoord2i")
-	__imp_glTexCoord2iv = GengoLibrary.ImportNow("glTexCoord2iv")
-	__imp_glTexCoord2s = GengoLibrary.ImportNow("glTexCoord2s")
-	__imp_glTexCoord2sv = GengoLibrary.ImportNow("glTexCoord2sv")
-	__imp_glTexCoord3d = GengoLibrary.ImportNow("glTexCoord3d")
-	__imp_glTexCoord3dv = GengoLibrary.ImportNow("glTexCoord3dv")
-	__imp_glTexCoord3f = GengoLibrary.ImportNow("glTexCoord3f")
-	__imp_glTexCoord3fv = GengoLibrary.ImportNow("glTexCoord3fv")
-	__imp_glTexCoord3i = GengoLibrary.ImportNow("glTexCoord3i")
-	__imp_glTexCoord3iv = GengoLibrary.ImportNow("glTexCoord3iv")
-	__imp_glTexCoord3s = GengoLibrary.ImportNow("glTexCoord3s")
-	__imp_glTexCoord3sv = GengoLibrary.ImportNow("glTexCoord3sv")
-	__imp_glTexCoord4d = GengoLibrary.ImportNow("glTexCoord4d")
-	__imp_glTexCoord4dv = GengoLibrary.ImportNow("glTexCoord4dv")
-	__imp_glTexCoord4f = GengoLibrary.ImportNow("glTexCoord4f")
-	__imp_glTexCoord4fv = GengoLibrary.ImportNow("glTexCoord4fv")
-	__imp_glTexCoord4i = GengoLibrary.ImportNow("glTexCoord4i")
-	__imp_glTexCoord4iv = GengoLibrary.ImportNow("glTexCoord4iv")
-	__imp_glTexCoord4s = GengoLibrary.ImportNow("glTexCoord4s")
-	__imp_glTexCoord4sv = GengoLibrary.ImportNow("glTexCoord4sv")
-	__imp_glTexCoordPointer = GengoLibrary.ImportNow("glTexCoordPointer")
-	__imp_glTexEnvf = GengoLibrary.ImportNow("glTexEnvf")
-	__imp_glTexEnvfv = GengoLibrary.ImportNow("glTexEnvfv")
-	__imp_glTexEnvi = GengoLibrary.ImportNow("glTexEnvi")
-	__imp_glTexEnviv = GengoLibrary.ImportNow("glTexEnviv")
-	__imp_glTexGend = GengoLibrary.ImportNow("glTexGend")
-	__imp_glTexGendv = GengoLibrary.ImportNow("glTexGendv")
-	__imp_glTexGenf = GengoLibrary.ImportNow("glTexGenf")
-	__imp_glTexGenfv = GengoLibrary.ImportNow("glTexGenfv")
-	__imp_glTexGeni = GengoLibrary.ImportNow("glTexGeni")
-	__imp_glTexGeniv = GengoLibrary.ImportNow("glTexGeniv")
-	__imp_glTexImage1D = GengoLibrary.ImportNow("glTexImage1D")
-	__imp_glTexImage2D = GengoLibrary.ImportNow("glTexImage2D")
-	__imp_glTexParameterf = GengoLibrary.ImportNow("glTexParameterf")
-	__imp_glTexParameterfv = GengoLibrary.ImportNow("glTexParameterfv")
-	__imp_glTexParameteri = GengoLibrary.ImportNow("glTexParameteri")
-	__imp_glTexParameteriv = GengoLibrary.ImportNow("glTexParameteriv")
-	__imp_glTexSubImage1D = GengoLibrary.ImportNow("glTexSubImage1D")
-	__imp_glTexSubImage2D = GengoLibrary.ImportNow("glTexSubImage2D")
-	__imp_glTranslated = GengoLibrary.ImportNow("glTranslated")
-	__imp_glTranslatef = GengoLibrary.ImportNow("glTranslatef")
-	__imp_glVertex2d = GengoLibrary.ImportNow("glVertex2d")
-	__imp_glVertex2dv = GengoLibrary.ImportNow("glVertex2dv")
-	__imp_glVertex2f = GengoLibrary.ImportNow("glVertex2f")
-	__imp_glVertex2fv = GengoLibrary.ImportNow("glVertex2fv")
-	__imp_glVertex2i = GengoLibrary.ImportNow("glVertex2i")
-	__imp_glVertex2iv = GengoLibrary.ImportNow("glVertex2iv")
-	__imp_glVertex2s = GengoLibrary.ImportNow("glVertex2s")
-	__imp_glVertex2sv = GengoLibrary.ImportNow("glVertex2sv")
-	__imp_glVertex3d = GengoLibrary.ImportNow("glVertex3d")
-	__imp_glVertex3dv = GengoLibrary.ImportNow("glVertex3dv")
-	__imp_glVertex3f = GengoLibrary.ImportNow("glVertex3f")
-	__imp_glVertex3fv = GengoLibrary.ImportNow("glVertex3fv")
-	__imp_glVertex3i = GengoLibrary.ImportNow("glVertex3i")
-	__imp_glVertex3iv = GengoLibrary.ImportNow("glVertex3iv")
-	__imp_glVertex3s = GengoLibrary.ImportNow("glVertex3s")
-	__imp_glVertex3sv = GengoLibrary.ImportNow("glVertex3sv")
-	__imp_glVertex4d = GengoLibrary.ImportNow("glVertex4d")
-	__imp_glVertex4dv = GengoLibrary.ImportNow("glVertex4dv")
-	__imp_glVertex4f = GengoLibrary.ImportNow("glVertex4f")
-	__imp_glVertex4fv = GengoLibrary.ImportNow("glVertex4fv")
-	__imp_glVertex4i = GengoLibrary.ImportNow("glVertex4i")
-	__imp_glVertex4iv = GengoLibrary.ImportNow("glVertex4iv")
-	__imp_glVertex4s = GengoLibrary.ImportNow("glVertex4s")
-	__imp_glVertex4sv = GengoLibrary.ImportNow("glVertex4sv")
-	__imp_glVertexPointer = GengoLibrary.ImportNow("glVertexPointer")
-	__imp_glViewport = GengoLibrary.ImportNow("glViewport")
 	__imp_glfwInit = GengoLibrary.ImportNow("glfwInit")
 	__imp_glfwTerminate = GengoLibrary.ImportNow("glfwTerminate")
 	__imp_glfwInitHint = GengoLibrary.ImportNow("glfwInitHint")
@@ -1245,1871 +813,12 @@ func init() {
 	__imp_glfwGetProcAddress = GengoLibrary.ImportNow("glfwGetProcAddress")
 	__imp_glfwVulkanSupported = GengoLibrary.ImportNow("glfwVulkanSupported")
 	__imp_glfwGetRequiredInstanceExtensions = GengoLibrary.ImportNow("glfwGetRequiredInstanceExtensions")
-	bindlib.Validate((*_CrtLocaleDataPublic)(nil), 16, 8, "_LocalePctype", 0, "_LocaleMbCurMax", 8, "_LocaleLcCodepage", 12)
-	bindlib.Validate((*_CrtLocalePointers)(nil), 16, 8, "Locinfo", 0, "Mbcinfo", 8)
-	bindlib.Validate((*_Mbstatet)(nil), 8, 4, "_Wchar", 0, "_Byte", 4, "_State", 6)
 	bindlib.Validate((*Vidmode)(nil), 24, 4, "Width", 0, "Height", 4, "redBits", 8, "greenBits", 12, "blueBits", 16, "refreshRate", 20)
 	bindlib.Validate((*Gammaramp)(nil), 32, 8, "Red", 0, "Green", 8, "Blue", 16, "Size", 24)
 	bindlib.Validate((*Image)(nil), 16, 8, "Width", 0, "Height", 4, "Pixels", 8)
 	bindlib.Validate((*Gamepadstate)(nil), 40, 4, "Buttons", 0, "Axes", 16)
 	bindlib.Validate((*Allocator)(nil), 32, 8, "Allocate", 0, "Reallocate", 8, "Deallocate", 16, "User", 24)
 }
-func _VaStart(arg **byte) { bindlib.CCall1(__imp___va_start.Addr(), bindlib.MarshallSyscall(arg)) }
-
-var __imp___va_start bindlib.PreloadProc
-
-func _VaStart(arg *VaList) { bindlib.CCall1(__imp___va_start.Addr(), bindlib.MarshallSyscall(arg)) }
-
-var __imp___security_init_cookie bindlib.PreloadProc
-
-func _SecurityInitCookie() { bindlib.CCall0(__imp___security_init_cookie.Addr()) }
-
-var __imp___security_check_cookie bindlib.PreloadProc
-
-func _SecurityCheckCookie(_StackCookie uintptr) {
-	bindlib.CCall1(__imp___security_check_cookie.Addr(), bindlib.MarshallSyscall(_StackCookie))
-}
-
-var __imp___report_gsfailure bindlib.PreloadProc
-
-func _ReportGsfailure(_StackCookie uintptr) {
-	bindlib.CCall1(__imp___report_gsfailure.Addr(), bindlib.MarshallSyscall(_StackCookie))
-}
-
-var __imp__invalid_parameter_noinfo bindlib.PreloadProc
-
-func _InvalidParameterNoinfo() { bindlib.CCall0(__imp__invalid_parameter_noinfo.Addr()) }
-
-var __imp__invalid_parameter_noinfo_noreturn bindlib.PreloadProc
-
-func _InvalidParameterNoinfoNoreturn() {
-	bindlib.CCall0(__imp__invalid_parameter_noinfo_noreturn.Addr())
-}
-
-var __imp__invoke_watson bindlib.PreloadProc
-
-func _InvokeWatson(_Expression *WcharT, _FunctionName *WcharT, _FileName *WcharT, _LineNo uint32, _Reserved uintptr) {
-	bindlib.CCall5(__imp__invoke_watson.Addr(), bindlib.MarshallSyscall(_Expression), bindlib.MarshallSyscall(_FunctionName), bindlib.MarshallSyscall(_FileName), bindlib.MarshallSyscall(_LineNo), bindlib.MarshallSyscall(_Reserved))
-}
-
-var __imp__errno bindlib.PreloadProc
-
-func _Errno() *int32 {
-	__res := bindlib.CCall0(__imp__errno.Addr())
-	return bindlib.UnmarshallSyscall[*int32](__res)
-}
-
-var __imp__set_errno bindlib.PreloadProc
-
-func _SetErrno(_Value int32) ErrnoT {
-	__res := bindlib.CCall1(__imp__set_errno.Addr(), bindlib.MarshallSyscall(_Value))
-	return bindlib.UnmarshallSyscall[ErrnoT](__res)
-}
-
-var __imp__get_errno bindlib.PreloadProc
-
-func _GetErrno(_Value *int32) ErrnoT {
-	__res := bindlib.CCall1(__imp__get_errno.Addr(), bindlib.MarshallSyscall(_Value))
-	return bindlib.UnmarshallSyscall[ErrnoT](__res)
-}
-
-var __imp___threadid bindlib.PreloadProc
-
-func _Threadid() uint64 {
-	__res := bindlib.CCall0(__imp___threadid.Addr())
-	return bindlib.UnmarshallSyscall[uint64](__res)
-}
-
-var __imp___threadhandle bindlib.PreloadProc
-
-func _Threadhandle() uintptr {
-	__res := bindlib.CCall0(__imp___threadhandle.Addr())
-	return bindlib.UnmarshallSyscall[uintptr](__res)
-}
-
-var __imp_glAccum bindlib.PreloadProc
-
-func Accum(op Enum, value Float) {
-	bindlib.CCall2(__imp_glAccum.Addr(), bindlib.MarshallSyscall(op), bindlib.MarshallSyscall(value))
-}
-
-var __imp_glAlphaFunc bindlib.PreloadProc
-
-func AlphaFunc(_func Enum, ref Clampf) {
-	bindlib.CCall2(__imp_glAlphaFunc.Addr(), bindlib.MarshallSyscall(_func), bindlib.MarshallSyscall(ref))
-}
-
-var __imp_glAreTexturesResident bindlib.PreloadProc
-
-func AreTexturesResident(n Sizei, textures *Uint, residences *Boolean) Boolean {
-	__res := bindlib.CCall3(__imp_glAreTexturesResident.Addr(), bindlib.MarshallSyscall(n), bindlib.MarshallSyscall(textures), bindlib.MarshallSyscall(residences))
-	return bindlib.UnmarshallSyscall[Boolean](__res)
-}
-
-var __imp_glArrayElement bindlib.PreloadProc
-
-func ArrayElement(i Int) { bindlib.CCall1(__imp_glArrayElement.Addr(), bindlib.MarshallSyscall(i)) }
-
-var __imp_glBegin bindlib.PreloadProc
-
-func Begin(mode Enum) { bindlib.CCall1(__imp_glBegin.Addr(), bindlib.MarshallSyscall(mode)) }
-
-var __imp_glBindTexture bindlib.PreloadProc
-
-func BindTexture(target Enum, texture Uint) {
-	bindlib.CCall2(__imp_glBindTexture.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(texture))
-}
-
-var __imp_glBitmap bindlib.PreloadProc
-
-func Bitmap(width Sizei, height Sizei, xorig Float, yorig Float, xmove Float, ymove Float, bitmap *Ubyte) {
-	bindlib.CCall7(__imp_glBitmap.Addr(), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(xorig), bindlib.MarshallSyscall(yorig), bindlib.MarshallSyscall(xmove), bindlib.MarshallSyscall(ymove), bindlib.MarshallSyscall(bitmap))
-}
-
-var __imp_glBlendFunc bindlib.PreloadProc
-
-func BlendFunc(sfactor Enum, dfactor Enum) {
-	bindlib.CCall2(__imp_glBlendFunc.Addr(), bindlib.MarshallSyscall(sfactor), bindlib.MarshallSyscall(dfactor))
-}
-
-var __imp_glCallList bindlib.PreloadProc
-
-func CallList(list Uint) { bindlib.CCall1(__imp_glCallList.Addr(), bindlib.MarshallSyscall(list)) }
-
-var __imp_glCallLists bindlib.PreloadProc
-
-func CallLists(n Sizei, _type Enum, lists *Void) {
-	bindlib.CCall3(__imp_glCallLists.Addr(), bindlib.MarshallSyscall(n), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(lists))
-}
-
-var __imp_glClear bindlib.PreloadProc
-
-func Clear(mask Bitfield) { bindlib.CCall1(__imp_glClear.Addr(), bindlib.MarshallSyscall(mask)) }
-
-var __imp_glClearAccum bindlib.PreloadProc
-
-func ClearAccum(red Float, green Float, blue Float, alpha Float) {
-	bindlib.CCall4(__imp_glClearAccum.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glClearColor bindlib.PreloadProc
-
-func ClearColor(red Clampf, green Clampf, blue Clampf, alpha Clampf) {
-	bindlib.CCall4(__imp_glClearColor.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glClearDepth bindlib.PreloadProc
-
-func ClearDepth(depth Clampd) {
-	bindlib.CCall1(__imp_glClearDepth.Addr(), bindlib.MarshallSyscall(depth))
-}
-
-var __imp_glClearIndex bindlib.PreloadProc
-
-func ClearIndex(c Float) { bindlib.CCall1(__imp_glClearIndex.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glClearStencil bindlib.PreloadProc
-
-func ClearStencil(s Int) { bindlib.CCall1(__imp_glClearStencil.Addr(), bindlib.MarshallSyscall(s)) }
-
-var __imp_glClipPlane bindlib.PreloadProc
-
-func ClipPlane(plane Enum, equation *Double) {
-	bindlib.CCall2(__imp_glClipPlane.Addr(), bindlib.MarshallSyscall(plane), bindlib.MarshallSyscall(equation))
-}
-
-var __imp_glColor3b bindlib.PreloadProc
-
-func Color3b(red Byte, green Byte, blue Byte) {
-	bindlib.CCall3(__imp_glColor3b.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3bv bindlib.PreloadProc
-
-func Color3bv(v *Byte) { bindlib.CCall1(__imp_glColor3bv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor3d bindlib.PreloadProc
-
-func Color3d(red Double, green Double, blue Double) {
-	bindlib.CCall3(__imp_glColor3d.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3dv bindlib.PreloadProc
-
-func Color3dv(v *Double) { bindlib.CCall1(__imp_glColor3dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor3f bindlib.PreloadProc
-
-func Color3f(red Float, green Float, blue Float) {
-	bindlib.CCall3(__imp_glColor3f.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3fv bindlib.PreloadProc
-
-func Color3fv(v *Float) { bindlib.CCall1(__imp_glColor3fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor3i bindlib.PreloadProc
-
-func Color3i(red Int, green Int, blue Int) {
-	bindlib.CCall3(__imp_glColor3i.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3iv bindlib.PreloadProc
-
-func Color3iv(v *Int) { bindlib.CCall1(__imp_glColor3iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor3s bindlib.PreloadProc
-
-func Color3s(red Short, green Short, blue Short) {
-	bindlib.CCall3(__imp_glColor3s.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3sv bindlib.PreloadProc
-
-func Color3sv(v *Short) { bindlib.CCall1(__imp_glColor3sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor3ub bindlib.PreloadProc
-
-func Color3ub(red Ubyte, green Ubyte, blue Ubyte) {
-	bindlib.CCall3(__imp_glColor3ub.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3ubv bindlib.PreloadProc
-
-func Color3ubv(v *Ubyte) { bindlib.CCall1(__imp_glColor3ubv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor3ui bindlib.PreloadProc
-
-func Color3ui(red Uint, green Uint, blue Uint) {
-	bindlib.CCall3(__imp_glColor3ui.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3uiv bindlib.PreloadProc
-
-func Color3uiv(v *Uint) { bindlib.CCall1(__imp_glColor3uiv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor3us bindlib.PreloadProc
-
-func Color3us(red Ushort, green Ushort, blue Ushort) {
-	bindlib.CCall3(__imp_glColor3us.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue))
-}
-
-var __imp_glColor3usv bindlib.PreloadProc
-
-func Color3usv(v *Ushort) { bindlib.CCall1(__imp_glColor3usv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4b bindlib.PreloadProc
-
-func Color4b(red Byte, green Byte, blue Byte, alpha Byte) {
-	bindlib.CCall4(__imp_glColor4b.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4bv bindlib.PreloadProc
-
-func Color4bv(v *Byte) { bindlib.CCall1(__imp_glColor4bv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4d bindlib.PreloadProc
-
-func Color4d(red Double, green Double, blue Double, alpha Double) {
-	bindlib.CCall4(__imp_glColor4d.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4dv bindlib.PreloadProc
-
-func Color4dv(v *Double) { bindlib.CCall1(__imp_glColor4dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4f bindlib.PreloadProc
-
-func Color4f(red Float, green Float, blue Float, alpha Float) {
-	bindlib.CCall4(__imp_glColor4f.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4fv bindlib.PreloadProc
-
-func Color4fv(v *Float) { bindlib.CCall1(__imp_glColor4fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4i bindlib.PreloadProc
-
-func Color4i(red Int, green Int, blue Int, alpha Int) {
-	bindlib.CCall4(__imp_glColor4i.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4iv bindlib.PreloadProc
-
-func Color4iv(v *Int) { bindlib.CCall1(__imp_glColor4iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4s bindlib.PreloadProc
-
-func Color4s(red Short, green Short, blue Short, alpha Short) {
-	bindlib.CCall4(__imp_glColor4s.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4sv bindlib.PreloadProc
-
-func Color4sv(v *Short) { bindlib.CCall1(__imp_glColor4sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4ub bindlib.PreloadProc
-
-func Color4ub(red Ubyte, green Ubyte, blue Ubyte, alpha Ubyte) {
-	bindlib.CCall4(__imp_glColor4ub.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4ubv bindlib.PreloadProc
-
-func Color4ubv(v *Ubyte) { bindlib.CCall1(__imp_glColor4ubv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4ui bindlib.PreloadProc
-
-func Color4ui(red Uint, green Uint, blue Uint, alpha Uint) {
-	bindlib.CCall4(__imp_glColor4ui.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4uiv bindlib.PreloadProc
-
-func Color4uiv(v *Uint) { bindlib.CCall1(__imp_glColor4uiv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColor4us bindlib.PreloadProc
-
-func Color4us(red Ushort, green Ushort, blue Ushort, alpha Ushort) {
-	bindlib.CCall4(__imp_glColor4us.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColor4usv bindlib.PreloadProc
-
-func Color4usv(v *Ushort) { bindlib.CCall1(__imp_glColor4usv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glColorMask bindlib.PreloadProc
-
-func ColorMask(red Boolean, green Boolean, blue Boolean, alpha Boolean) {
-	bindlib.CCall4(__imp_glColorMask.Addr(), bindlib.MarshallSyscall(red), bindlib.MarshallSyscall(green), bindlib.MarshallSyscall(blue), bindlib.MarshallSyscall(alpha))
-}
-
-var __imp_glColorMaterial bindlib.PreloadProc
-
-func ColorMaterial(face Enum, mode Enum) {
-	bindlib.CCall2(__imp_glColorMaterial.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(mode))
-}
-
-var __imp_glColorPointer bindlib.PreloadProc
-
-func ColorPointer(size Int, _type Enum, stride Sizei, pointer *Void) {
-	bindlib.CCall4(__imp_glColorPointer.Addr(), bindlib.MarshallSyscall(size), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(pointer))
-}
-
-var __imp_glCopyPixels bindlib.PreloadProc
-
-func CopyPixels(x Int, y Int, width Sizei, height Sizei, _type Enum) {
-	bindlib.CCall5(__imp_glCopyPixels.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(_type))
-}
-
-var __imp_glCopyTexImage1D bindlib.PreloadProc
-
-func CopyTexImage1D(target Enum, level Int, internalFormat Enum, x Int, y Int, width Sizei, border Int) {
-	bindlib.CCall7(__imp_glCopyTexImage1D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(internalFormat), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(border))
-}
-
-var __imp_glCopyTexImage2D bindlib.PreloadProc
-
-func CopyTexImage2D(target Enum, level Int, internalFormat Enum, x Int, y Int, width Sizei, height Sizei, border Int) {
-	bindlib.CCall8(__imp_glCopyTexImage2D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(internalFormat), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(border))
-}
-
-var __imp_glCopyTexSubImage1D bindlib.PreloadProc
-
-func CopyTexSubImage1D(target Enum, level Int, xoffset Int, x Int, y Int, width Sizei) {
-	bindlib.CCall6(__imp_glCopyTexSubImage1D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(xoffset), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width))
-}
-
-var __imp_glCopyTexSubImage2D bindlib.PreloadProc
-
-func CopyTexSubImage2D(target Enum, level Int, xoffset Int, yoffset Int, x Int, y Int, width Sizei, height Sizei) {
-	bindlib.CCall8(__imp_glCopyTexSubImage2D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(xoffset), bindlib.MarshallSyscall(yoffset), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height))
-}
-
-var __imp_glCullFace bindlib.PreloadProc
-
-func CullFace(mode Enum) { bindlib.CCall1(__imp_glCullFace.Addr(), bindlib.MarshallSyscall(mode)) }
-
-var __imp_glDeleteLists bindlib.PreloadProc
-
-func DeleteLists(list Uint, _range Sizei) {
-	bindlib.CCall2(__imp_glDeleteLists.Addr(), bindlib.MarshallSyscall(list), bindlib.MarshallSyscall(_range))
-}
-
-var __imp_glDeleteTextures bindlib.PreloadProc
-
-func DeleteTextures(n Sizei, textures *Uint) {
-	bindlib.CCall2(__imp_glDeleteTextures.Addr(), bindlib.MarshallSyscall(n), bindlib.MarshallSyscall(textures))
-}
-
-var __imp_glDepthFunc bindlib.PreloadProc
-
-func DepthFunc(_func Enum) { bindlib.CCall1(__imp_glDepthFunc.Addr(), bindlib.MarshallSyscall(_func)) }
-
-var __imp_glDepthMask bindlib.PreloadProc
-
-func DepthMask(flag Boolean) { bindlib.CCall1(__imp_glDepthMask.Addr(), bindlib.MarshallSyscall(flag)) }
-
-var __imp_glDepthRange bindlib.PreloadProc
-
-func DepthRange(zNear Clampd, zFar Clampd) {
-	bindlib.CCall2(__imp_glDepthRange.Addr(), bindlib.MarshallSyscall(zNear), bindlib.MarshallSyscall(zFar))
-}
-
-var __imp_glDisable bindlib.PreloadProc
-
-func Disable(_cap Enum) { bindlib.CCall1(__imp_glDisable.Addr(), bindlib.MarshallSyscall(_cap)) }
-
-var __imp_glDisableClientState bindlib.PreloadProc
-
-func DisableClientState(array Enum) {
-	bindlib.CCall1(__imp_glDisableClientState.Addr(), bindlib.MarshallSyscall(array))
-}
-
-var __imp_glDrawArrays bindlib.PreloadProc
-
-func DrawArrays(mode Enum, first Int, count Sizei) {
-	bindlib.CCall3(__imp_glDrawArrays.Addr(), bindlib.MarshallSyscall(mode), bindlib.MarshallSyscall(first), bindlib.MarshallSyscall(count))
-}
-
-var __imp_glDrawBuffer bindlib.PreloadProc
-
-func DrawBuffer(mode Enum) { bindlib.CCall1(__imp_glDrawBuffer.Addr(), bindlib.MarshallSyscall(mode)) }
-
-var __imp_glDrawElements bindlib.PreloadProc
-
-func DrawElements(mode Enum, count Sizei, _type Enum, indices *Void) {
-	bindlib.CCall4(__imp_glDrawElements.Addr(), bindlib.MarshallSyscall(mode), bindlib.MarshallSyscall(count), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(indices))
-}
-
-var __imp_glDrawPixels bindlib.PreloadProc
-
-func DrawPixels(width Sizei, height Sizei, format Enum, _type Enum, pixels *Void) {
-	bindlib.CCall5(__imp_glDrawPixels.Addr(), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(pixels))
-}
-
-var __imp_glEdgeFlag bindlib.PreloadProc
-
-func EdgeFlag(flag Boolean) { bindlib.CCall1(__imp_glEdgeFlag.Addr(), bindlib.MarshallSyscall(flag)) }
-
-var __imp_glEdgeFlagPointer bindlib.PreloadProc
-
-func EdgeFlagPointer(stride Sizei, pointer *Void) {
-	bindlib.CCall2(__imp_glEdgeFlagPointer.Addr(), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(pointer))
-}
-
-var __imp_glEdgeFlagv bindlib.PreloadProc
-
-func EdgeFlagv(flag *Boolean) {
-	bindlib.CCall1(__imp_glEdgeFlagv.Addr(), bindlib.MarshallSyscall(flag))
-}
-
-var __imp_glEnable bindlib.PreloadProc
-
-func Enable(_cap Enum) { bindlib.CCall1(__imp_glEnable.Addr(), bindlib.MarshallSyscall(_cap)) }
-
-var __imp_glEnableClientState bindlib.PreloadProc
-
-func EnableClientState(array Enum) {
-	bindlib.CCall1(__imp_glEnableClientState.Addr(), bindlib.MarshallSyscall(array))
-}
-
-var __imp_glEnd bindlib.PreloadProc
-
-func End() { bindlib.CCall0(__imp_glEnd.Addr()) }
-
-var __imp_glEndList bindlib.PreloadProc
-
-func EndList() { bindlib.CCall0(__imp_glEndList.Addr()) }
-
-var __imp_glEvalCoord1d bindlib.PreloadProc
-
-func EvalCoord1d(u Double) { bindlib.CCall1(__imp_glEvalCoord1d.Addr(), bindlib.MarshallSyscall(u)) }
-
-var __imp_glEvalCoord1dv bindlib.PreloadProc
-
-func EvalCoord1dv(u *Double) { bindlib.CCall1(__imp_glEvalCoord1dv.Addr(), bindlib.MarshallSyscall(u)) }
-
-var __imp_glEvalCoord1f bindlib.PreloadProc
-
-func EvalCoord1f(u Float) { bindlib.CCall1(__imp_glEvalCoord1f.Addr(), bindlib.MarshallSyscall(u)) }
-
-var __imp_glEvalCoord1fv bindlib.PreloadProc
-
-func EvalCoord1fv(u *Float) { bindlib.CCall1(__imp_glEvalCoord1fv.Addr(), bindlib.MarshallSyscall(u)) }
-
-var __imp_glEvalCoord2d bindlib.PreloadProc
-
-func EvalCoord2d(u Double, v Double) {
-	bindlib.CCall2(__imp_glEvalCoord2d.Addr(), bindlib.MarshallSyscall(u), bindlib.MarshallSyscall(v))
-}
-
-var __imp_glEvalCoord2dv bindlib.PreloadProc
-
-func EvalCoord2dv(u *Double) { bindlib.CCall1(__imp_glEvalCoord2dv.Addr(), bindlib.MarshallSyscall(u)) }
-
-var __imp_glEvalCoord2f bindlib.PreloadProc
-
-func EvalCoord2f(u Float, v Float) {
-	bindlib.CCall2(__imp_glEvalCoord2f.Addr(), bindlib.MarshallSyscall(u), bindlib.MarshallSyscall(v))
-}
-
-var __imp_glEvalCoord2fv bindlib.PreloadProc
-
-func EvalCoord2fv(u *Float) { bindlib.CCall1(__imp_glEvalCoord2fv.Addr(), bindlib.MarshallSyscall(u)) }
-
-var __imp_glEvalMesh1 bindlib.PreloadProc
-
-func EvalMesh1(mode Enum, i1 Int, i2 Int) {
-	bindlib.CCall3(__imp_glEvalMesh1.Addr(), bindlib.MarshallSyscall(mode), bindlib.MarshallSyscall(i1), bindlib.MarshallSyscall(i2))
-}
-
-var __imp_glEvalMesh2 bindlib.PreloadProc
-
-func EvalMesh2(mode Enum, i1 Int, i2 Int, j1 Int, j2 Int) {
-	bindlib.CCall5(__imp_glEvalMesh2.Addr(), bindlib.MarshallSyscall(mode), bindlib.MarshallSyscall(i1), bindlib.MarshallSyscall(i2), bindlib.MarshallSyscall(j1), bindlib.MarshallSyscall(j2))
-}
-
-var __imp_glEvalPoint1 bindlib.PreloadProc
-
-func EvalPoint1(i Int) { bindlib.CCall1(__imp_glEvalPoint1.Addr(), bindlib.MarshallSyscall(i)) }
-
-var __imp_glEvalPoint2 bindlib.PreloadProc
-
-func EvalPoint2(i Int, j Int) {
-	bindlib.CCall2(__imp_glEvalPoint2.Addr(), bindlib.MarshallSyscall(i), bindlib.MarshallSyscall(j))
-}
-
-var __imp_glFeedbackBuffer bindlib.PreloadProc
-
-func FeedbackBuffer(size Sizei, _type Enum, buffer *Float) {
-	bindlib.CCall3(__imp_glFeedbackBuffer.Addr(), bindlib.MarshallSyscall(size), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(buffer))
-}
-
-var __imp_glFinish bindlib.PreloadProc
-
-func Finish() { bindlib.CCall0(__imp_glFinish.Addr()) }
-
-var __imp_glFlush bindlib.PreloadProc
-
-func Flush() { bindlib.CCall0(__imp_glFlush.Addr()) }
-
-var __imp_glFogf bindlib.PreloadProc
-
-func Fogf(pname Enum, param Float) {
-	bindlib.CCall2(__imp_glFogf.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glFogfv bindlib.PreloadProc
-
-func Fogfv(pname Enum, params *Float) {
-	bindlib.CCall2(__imp_glFogfv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glFogi bindlib.PreloadProc
-
-func Fogi(pname Enum, param Int) {
-	bindlib.CCall2(__imp_glFogi.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glFogiv bindlib.PreloadProc
-
-func Fogiv(pname Enum, params *Int) {
-	bindlib.CCall2(__imp_glFogiv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glFrontFace bindlib.PreloadProc
-
-func FrontFace(mode Enum) { bindlib.CCall1(__imp_glFrontFace.Addr(), bindlib.MarshallSyscall(mode)) }
-
-var __imp_glFrustum bindlib.PreloadProc
-
-func Frustum(left Double, right Double, bottom Double, top Double, zNear Double, zFar Double) {
-	bindlib.CCall6(__imp_glFrustum.Addr(), bindlib.MarshallSyscall(left), bindlib.MarshallSyscall(right), bindlib.MarshallSyscall(bottom), bindlib.MarshallSyscall(top), bindlib.MarshallSyscall(zNear), bindlib.MarshallSyscall(zFar))
-}
-
-var __imp_glGenLists bindlib.PreloadProc
-
-func GenLists(_range Sizei) Uint {
-	__res := bindlib.CCall1(__imp_glGenLists.Addr(), bindlib.MarshallSyscall(_range))
-	return bindlib.UnmarshallSyscall[Uint](__res)
-}
-
-var __imp_glGenTextures bindlib.PreloadProc
-
-func GenTextures(n Sizei, textures *Uint) {
-	bindlib.CCall2(__imp_glGenTextures.Addr(), bindlib.MarshallSyscall(n), bindlib.MarshallSyscall(textures))
-}
-
-var __imp_glGetBooleanv bindlib.PreloadProc
-
-func GetBooleanv(pname Enum, params *Boolean) {
-	bindlib.CCall2(__imp_glGetBooleanv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetClipPlane bindlib.PreloadProc
-
-func GetClipPlane(plane Enum, equation *Double) {
-	bindlib.CCall2(__imp_glGetClipPlane.Addr(), bindlib.MarshallSyscall(plane), bindlib.MarshallSyscall(equation))
-}
-
-var __imp_glGetDoublev bindlib.PreloadProc
-
-func GetDoublev(pname Enum, params *Double) {
-	bindlib.CCall2(__imp_glGetDoublev.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetError bindlib.PreloadProc
-
-func GetError() Enum {
-	__res := bindlib.CCall0(__imp_glGetError.Addr())
-	return bindlib.UnmarshallSyscall[Enum](__res)
-}
-
-var __imp_glGetFloatv bindlib.PreloadProc
-
-func GetFloatv(pname Enum, params *Float) {
-	bindlib.CCall2(__imp_glGetFloatv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetIntegerv bindlib.PreloadProc
-
-func GetIntegerv(pname Enum, params *Int) {
-	bindlib.CCall2(__imp_glGetIntegerv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetLightfv bindlib.PreloadProc
-
-func GetLightfv(light Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glGetLightfv.Addr(), bindlib.MarshallSyscall(light), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetLightiv bindlib.PreloadProc
-
-func GetLightiv(light Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glGetLightiv.Addr(), bindlib.MarshallSyscall(light), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetMapdv bindlib.PreloadProc
-
-func GetMapdv(target Enum, query Enum, v *Double) {
-	bindlib.CCall3(__imp_glGetMapdv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(query), bindlib.MarshallSyscall(v))
-}
-
-var __imp_glGetMapfv bindlib.PreloadProc
-
-func GetMapfv(target Enum, query Enum, v *Float) {
-	bindlib.CCall3(__imp_glGetMapfv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(query), bindlib.MarshallSyscall(v))
-}
-
-var __imp_glGetMapiv bindlib.PreloadProc
-
-func GetMapiv(target Enum, query Enum, v *Int) {
-	bindlib.CCall3(__imp_glGetMapiv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(query), bindlib.MarshallSyscall(v))
-}
-
-var __imp_glGetMaterialfv bindlib.PreloadProc
-
-func GetMaterialfv(face Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glGetMaterialfv.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetMaterialiv bindlib.PreloadProc
-
-func GetMaterialiv(face Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glGetMaterialiv.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetPixelMapfv bindlib.PreloadProc
-
-func GetPixelMapfv(_map Enum, values *Float) {
-	bindlib.CCall2(__imp_glGetPixelMapfv.Addr(), bindlib.MarshallSyscall(_map), bindlib.MarshallSyscall(values))
-}
-
-var __imp_glGetPixelMapuiv bindlib.PreloadProc
-
-func GetPixelMapuiv(_map Enum, values *Uint) {
-	bindlib.CCall2(__imp_glGetPixelMapuiv.Addr(), bindlib.MarshallSyscall(_map), bindlib.MarshallSyscall(values))
-}
-
-var __imp_glGetPixelMapusv bindlib.PreloadProc
-
-func GetPixelMapusv(_map Enum, values *Ushort) {
-	bindlib.CCall2(__imp_glGetPixelMapusv.Addr(), bindlib.MarshallSyscall(_map), bindlib.MarshallSyscall(values))
-}
-
-var __imp_glGetPointerv bindlib.PreloadProc
-
-func GetPointerv(pname Enum, params **Void) {
-	bindlib.CCall2(__imp_glGetPointerv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetPolygonStipple bindlib.PreloadProc
-
-func GetPolygonStipple(mask *Ubyte) {
-	bindlib.CCall1(__imp_glGetPolygonStipple.Addr(), bindlib.MarshallSyscall(mask))
-}
-
-var __imp_glGetString bindlib.PreloadProc
-
-func GetString(name Enum) *Ubyte {
-	__res := bindlib.CCall1(__imp_glGetString.Addr(), bindlib.MarshallSyscall(name))
-	return bindlib.UnmarshallSyscall[*Ubyte](__res)
-}
-
-var __imp_glGetTexEnvfv bindlib.PreloadProc
-
-func GetTexEnvfv(target Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glGetTexEnvfv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexEnviv bindlib.PreloadProc
-
-func GetTexEnviv(target Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glGetTexEnviv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexGendv bindlib.PreloadProc
-
-func GetTexGendv(coord Enum, pname Enum, params *Double) {
-	bindlib.CCall3(__imp_glGetTexGendv.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexGenfv bindlib.PreloadProc
-
-func GetTexGenfv(coord Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glGetTexGenfv.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexGeniv bindlib.PreloadProc
-
-func GetTexGeniv(coord Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glGetTexGeniv.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexImage bindlib.PreloadProc
-
-func GetTexImage(target Enum, level Int, format Enum, _type Enum, pixels *Void) {
-	bindlib.CCall5(__imp_glGetTexImage.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(pixels))
-}
-
-var __imp_glGetTexLevelParameterfv bindlib.PreloadProc
-
-func GetTexLevelParameterfv(target Enum, level Int, pname Enum, params *Float) {
-	bindlib.CCall4(__imp_glGetTexLevelParameterfv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexLevelParameteriv bindlib.PreloadProc
-
-func GetTexLevelParameteriv(target Enum, level Int, pname Enum, params *Int) {
-	bindlib.CCall4(__imp_glGetTexLevelParameteriv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexParameterfv bindlib.PreloadProc
-
-func GetTexParameterfv(target Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glGetTexParameterfv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glGetTexParameteriv bindlib.PreloadProc
-
-func GetTexParameteriv(target Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glGetTexParameteriv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glHint bindlib.PreloadProc
-
-func Hint(target Enum, mode Enum) {
-	bindlib.CCall2(__imp_glHint.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(mode))
-}
-
-var __imp_glIndexMask bindlib.PreloadProc
-
-func IndexMask(mask Uint) { bindlib.CCall1(__imp_glIndexMask.Addr(), bindlib.MarshallSyscall(mask)) }
-
-var __imp_glIndexPointer bindlib.PreloadProc
-
-func IndexPointer(_type Enum, stride Sizei, pointer *Void) {
-	bindlib.CCall3(__imp_glIndexPointer.Addr(), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(pointer))
-}
-
-var __imp_glIndexd bindlib.PreloadProc
-
-func Indexd(c Double) { bindlib.CCall1(__imp_glIndexd.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexdv bindlib.PreloadProc
-
-func Indexdv(c *Double) { bindlib.CCall1(__imp_glIndexdv.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexf bindlib.PreloadProc
-
-func Indexf(c Float) { bindlib.CCall1(__imp_glIndexf.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexfv bindlib.PreloadProc
-
-func Indexfv(c *Float) { bindlib.CCall1(__imp_glIndexfv.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexi bindlib.PreloadProc
-
-func Indexi(c Int) { bindlib.CCall1(__imp_glIndexi.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexiv bindlib.PreloadProc
-
-func Indexiv(c *Int) { bindlib.CCall1(__imp_glIndexiv.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexs bindlib.PreloadProc
-
-func Indexs(c Short) { bindlib.CCall1(__imp_glIndexs.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexsv bindlib.PreloadProc
-
-func Indexsv(c *Short) { bindlib.CCall1(__imp_glIndexsv.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexub bindlib.PreloadProc
-
-func Indexub(c Ubyte) { bindlib.CCall1(__imp_glIndexub.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glIndexubv bindlib.PreloadProc
-
-func Indexubv(c *Ubyte) { bindlib.CCall1(__imp_glIndexubv.Addr(), bindlib.MarshallSyscall(c)) }
-
-var __imp_glInitNames bindlib.PreloadProc
-
-func InitNames() { bindlib.CCall0(__imp_glInitNames.Addr()) }
-
-var __imp_glInterleavedArrays bindlib.PreloadProc
-
-func InterleavedArrays(format Enum, stride Sizei, pointer *Void) {
-	bindlib.CCall3(__imp_glInterleavedArrays.Addr(), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(pointer))
-}
-
-var __imp_glIsEnabled bindlib.PreloadProc
-
-func IsEnabled(_cap Enum) Boolean {
-	__res := bindlib.CCall1(__imp_glIsEnabled.Addr(), bindlib.MarshallSyscall(_cap))
-	return bindlib.UnmarshallSyscall[Boolean](__res)
-}
-
-var __imp_glIsList bindlib.PreloadProc
-
-func IsList(list Uint) Boolean {
-	__res := bindlib.CCall1(__imp_glIsList.Addr(), bindlib.MarshallSyscall(list))
-	return bindlib.UnmarshallSyscall[Boolean](__res)
-}
-
-var __imp_glIsTexture bindlib.PreloadProc
-
-func IsTexture(texture Uint) Boolean {
-	__res := bindlib.CCall1(__imp_glIsTexture.Addr(), bindlib.MarshallSyscall(texture))
-	return bindlib.UnmarshallSyscall[Boolean](__res)
-}
-
-var __imp_glLightModelf bindlib.PreloadProc
-
-func LightModelf(pname Enum, param Float) {
-	bindlib.CCall2(__imp_glLightModelf.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glLightModelfv bindlib.PreloadProc
-
-func LightModelfv(pname Enum, params *Float) {
-	bindlib.CCall2(__imp_glLightModelfv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glLightModeli bindlib.PreloadProc
-
-func LightModeli(pname Enum, param Int) {
-	bindlib.CCall2(__imp_glLightModeli.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glLightModeliv bindlib.PreloadProc
-
-func LightModeliv(pname Enum, params *Int) {
-	bindlib.CCall2(__imp_glLightModeliv.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glLightf bindlib.PreloadProc
-
-func Lightf(light Enum, pname Enum, param Float) {
-	bindlib.CCall3(__imp_glLightf.Addr(), bindlib.MarshallSyscall(light), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glLightfv bindlib.PreloadProc
-
-func Lightfv(light Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glLightfv.Addr(), bindlib.MarshallSyscall(light), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glLighti bindlib.PreloadProc
-
-func Lighti(light Enum, pname Enum, param Int) {
-	bindlib.CCall3(__imp_glLighti.Addr(), bindlib.MarshallSyscall(light), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glLightiv bindlib.PreloadProc
-
-func Lightiv(light Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glLightiv.Addr(), bindlib.MarshallSyscall(light), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glLineStipple bindlib.PreloadProc
-
-func LineStipple(factor Int, pattern Ushort) {
-	bindlib.CCall2(__imp_glLineStipple.Addr(), bindlib.MarshallSyscall(factor), bindlib.MarshallSyscall(pattern))
-}
-
-var __imp_glLineWidth bindlib.PreloadProc
-
-func LineWidth(width Float) { bindlib.CCall1(__imp_glLineWidth.Addr(), bindlib.MarshallSyscall(width)) }
-
-var __imp_glListBase bindlib.PreloadProc
-
-func ListBase(base Uint) { bindlib.CCall1(__imp_glListBase.Addr(), bindlib.MarshallSyscall(base)) }
-
-var __imp_glLoadIdentity bindlib.PreloadProc
-
-func LoadIdentity() { bindlib.CCall0(__imp_glLoadIdentity.Addr()) }
-
-var __imp_glLoadMatrixd bindlib.PreloadProc
-
-func LoadMatrixd(m *Double) { bindlib.CCall1(__imp_glLoadMatrixd.Addr(), bindlib.MarshallSyscall(m)) }
-
-var __imp_glLoadMatrixf bindlib.PreloadProc
-
-func LoadMatrixf(m *Float) { bindlib.CCall1(__imp_glLoadMatrixf.Addr(), bindlib.MarshallSyscall(m)) }
-
-var __imp_glLoadName bindlib.PreloadProc
-
-func LoadName(name Uint) { bindlib.CCall1(__imp_glLoadName.Addr(), bindlib.MarshallSyscall(name)) }
-
-var __imp_glLogicOp bindlib.PreloadProc
-
-func LogicOp(opcode Enum) { bindlib.CCall1(__imp_glLogicOp.Addr(), bindlib.MarshallSyscall(opcode)) }
-
-var __imp_glMap1d bindlib.PreloadProc
-
-func Map1d(target Enum, u1 Double, u2 Double, stride Int, order Int, points *Double) {
-	bindlib.CCall6(__imp_glMap1d.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(order), bindlib.MarshallSyscall(points))
-}
-
-var __imp_glMap1f bindlib.PreloadProc
-
-func Map1f(target Enum, u1 Float, u2 Float, stride Int, order Int, points *Float) {
-	bindlib.CCall6(__imp_glMap1f.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(order), bindlib.MarshallSyscall(points))
-}
-
-var __imp_glMap2d bindlib.PreloadProc
-
-func Map2d(target Enum, u1 Double, u2 Double, ustride Int, uorder Int, v1 Double, v2 Double, vstride Int, vorder Int, points *Double) {
-	bindlib.CCall10(__imp_glMap2d.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2), bindlib.MarshallSyscall(ustride), bindlib.MarshallSyscall(uorder), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2), bindlib.MarshallSyscall(vstride), bindlib.MarshallSyscall(vorder), bindlib.MarshallSyscall(points))
-}
-
-var __imp_glMap2f bindlib.PreloadProc
-
-func Map2f(target Enum, u1 Float, u2 Float, ustride Int, uorder Int, v1 Float, v2 Float, vstride Int, vorder Int, points *Float) {
-	bindlib.CCall10(__imp_glMap2f.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2), bindlib.MarshallSyscall(ustride), bindlib.MarshallSyscall(uorder), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2), bindlib.MarshallSyscall(vstride), bindlib.MarshallSyscall(vorder), bindlib.MarshallSyscall(points))
-}
-
-var __imp_glMapGrid1d bindlib.PreloadProc
-
-func MapGrid1d(un Int, u1 Double, u2 Double) {
-	bindlib.CCall3(__imp_glMapGrid1d.Addr(), bindlib.MarshallSyscall(un), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2))
-}
-
-var __imp_glMapGrid1f bindlib.PreloadProc
-
-func MapGrid1f(un Int, u1 Float, u2 Float) {
-	bindlib.CCall3(__imp_glMapGrid1f.Addr(), bindlib.MarshallSyscall(un), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2))
-}
-
-var __imp_glMapGrid2d bindlib.PreloadProc
-
-func MapGrid2d(un Int, u1 Double, u2 Double, vn Int, v1 Double, v2 Double) {
-	bindlib.CCall6(__imp_glMapGrid2d.Addr(), bindlib.MarshallSyscall(un), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2), bindlib.MarshallSyscall(vn), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2))
-}
-
-var __imp_glMapGrid2f bindlib.PreloadProc
-
-func MapGrid2f(un Int, u1 Float, u2 Float, vn Int, v1 Float, v2 Float) {
-	bindlib.CCall6(__imp_glMapGrid2f.Addr(), bindlib.MarshallSyscall(un), bindlib.MarshallSyscall(u1), bindlib.MarshallSyscall(u2), bindlib.MarshallSyscall(vn), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2))
-}
-
-var __imp_glMaterialf bindlib.PreloadProc
-
-func Materialf(face Enum, pname Enum, param Float) {
-	bindlib.CCall3(__imp_glMaterialf.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glMaterialfv bindlib.PreloadProc
-
-func Materialfv(face Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glMaterialfv.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glMateriali bindlib.PreloadProc
-
-func Materiali(face Enum, pname Enum, param Int) {
-	bindlib.CCall3(__imp_glMateriali.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glMaterialiv bindlib.PreloadProc
-
-func Materialiv(face Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glMaterialiv.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glMatrixMode bindlib.PreloadProc
-
-func MatrixMode(mode Enum) { bindlib.CCall1(__imp_glMatrixMode.Addr(), bindlib.MarshallSyscall(mode)) }
-
-var __imp_glMultMatrixd bindlib.PreloadProc
-
-func MultMatrixd(m *Double) { bindlib.CCall1(__imp_glMultMatrixd.Addr(), bindlib.MarshallSyscall(m)) }
-
-var __imp_glMultMatrixf bindlib.PreloadProc
-
-func MultMatrixf(m *Float) { bindlib.CCall1(__imp_glMultMatrixf.Addr(), bindlib.MarshallSyscall(m)) }
-
-var __imp_glNewList bindlib.PreloadProc
-
-func NewList(list Uint, mode Enum) {
-	bindlib.CCall2(__imp_glNewList.Addr(), bindlib.MarshallSyscall(list), bindlib.MarshallSyscall(mode))
-}
-
-var __imp_glNormal3b bindlib.PreloadProc
-
-func Normal3b(nx Byte, ny Byte, nz Byte) {
-	bindlib.CCall3(__imp_glNormal3b.Addr(), bindlib.MarshallSyscall(nx), bindlib.MarshallSyscall(ny), bindlib.MarshallSyscall(nz))
-}
-
-var __imp_glNormal3bv bindlib.PreloadProc
-
-func Normal3bv(v *Byte) { bindlib.CCall1(__imp_glNormal3bv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glNormal3d bindlib.PreloadProc
-
-func Normal3d(nx Double, ny Double, nz Double) {
-	bindlib.CCall3(__imp_glNormal3d.Addr(), bindlib.MarshallSyscall(nx), bindlib.MarshallSyscall(ny), bindlib.MarshallSyscall(nz))
-}
-
-var __imp_glNormal3dv bindlib.PreloadProc
-
-func Normal3dv(v *Double) { bindlib.CCall1(__imp_glNormal3dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glNormal3f bindlib.PreloadProc
-
-func Normal3f(nx Float, ny Float, nz Float) {
-	bindlib.CCall3(__imp_glNormal3f.Addr(), bindlib.MarshallSyscall(nx), bindlib.MarshallSyscall(ny), bindlib.MarshallSyscall(nz))
-}
-
-var __imp_glNormal3fv bindlib.PreloadProc
-
-func Normal3fv(v *Float) { bindlib.CCall1(__imp_glNormal3fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glNormal3i bindlib.PreloadProc
-
-func Normal3i(nx Int, ny Int, nz Int) {
-	bindlib.CCall3(__imp_glNormal3i.Addr(), bindlib.MarshallSyscall(nx), bindlib.MarshallSyscall(ny), bindlib.MarshallSyscall(nz))
-}
-
-var __imp_glNormal3iv bindlib.PreloadProc
-
-func Normal3iv(v *Int) { bindlib.CCall1(__imp_glNormal3iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glNormal3s bindlib.PreloadProc
-
-func Normal3s(nx Short, ny Short, nz Short) {
-	bindlib.CCall3(__imp_glNormal3s.Addr(), bindlib.MarshallSyscall(nx), bindlib.MarshallSyscall(ny), bindlib.MarshallSyscall(nz))
-}
-
-var __imp_glNormal3sv bindlib.PreloadProc
-
-func Normal3sv(v *Short) { bindlib.CCall1(__imp_glNormal3sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glNormalPointer bindlib.PreloadProc
-
-func NormalPointer(_type Enum, stride Sizei, pointer *Void) {
-	bindlib.CCall3(__imp_glNormalPointer.Addr(), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(pointer))
-}
-
-var __imp_glOrtho bindlib.PreloadProc
-
-func Ortho(left Double, right Double, bottom Double, top Double, zNear Double, zFar Double) {
-	bindlib.CCall6(__imp_glOrtho.Addr(), bindlib.MarshallSyscall(left), bindlib.MarshallSyscall(right), bindlib.MarshallSyscall(bottom), bindlib.MarshallSyscall(top), bindlib.MarshallSyscall(zNear), bindlib.MarshallSyscall(zFar))
-}
-
-var __imp_glPassThrough bindlib.PreloadProc
-
-func PassThrough(token Float) {
-	bindlib.CCall1(__imp_glPassThrough.Addr(), bindlib.MarshallSyscall(token))
-}
-
-var __imp_glPixelMapfv bindlib.PreloadProc
-
-func PixelMapfv(_map Enum, mapsize Sizei, values *Float) {
-	bindlib.CCall3(__imp_glPixelMapfv.Addr(), bindlib.MarshallSyscall(_map), bindlib.MarshallSyscall(mapsize), bindlib.MarshallSyscall(values))
-}
-
-var __imp_glPixelMapuiv bindlib.PreloadProc
-
-func PixelMapuiv(_map Enum, mapsize Sizei, values *Uint) {
-	bindlib.CCall3(__imp_glPixelMapuiv.Addr(), bindlib.MarshallSyscall(_map), bindlib.MarshallSyscall(mapsize), bindlib.MarshallSyscall(values))
-}
-
-var __imp_glPixelMapusv bindlib.PreloadProc
-
-func PixelMapusv(_map Enum, mapsize Sizei, values *Ushort) {
-	bindlib.CCall3(__imp_glPixelMapusv.Addr(), bindlib.MarshallSyscall(_map), bindlib.MarshallSyscall(mapsize), bindlib.MarshallSyscall(values))
-}
-
-var __imp_glPixelStoref bindlib.PreloadProc
-
-func PixelStoref(pname Enum, param Float) {
-	bindlib.CCall2(__imp_glPixelStoref.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glPixelStorei bindlib.PreloadProc
-
-func PixelStorei(pname Enum, param Int) {
-	bindlib.CCall2(__imp_glPixelStorei.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glPixelTransferf bindlib.PreloadProc
-
-func PixelTransferf(pname Enum, param Float) {
-	bindlib.CCall2(__imp_glPixelTransferf.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glPixelTransferi bindlib.PreloadProc
-
-func PixelTransferi(pname Enum, param Int) {
-	bindlib.CCall2(__imp_glPixelTransferi.Addr(), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glPixelZoom bindlib.PreloadProc
-
-func PixelZoom(xfactor Float, yfactor Float) {
-	bindlib.CCall2(__imp_glPixelZoom.Addr(), bindlib.MarshallSyscall(xfactor), bindlib.MarshallSyscall(yfactor))
-}
-
-var __imp_glPointSize bindlib.PreloadProc
-
-func PointSize(size Float) { bindlib.CCall1(__imp_glPointSize.Addr(), bindlib.MarshallSyscall(size)) }
-
-var __imp_glPolygonMode bindlib.PreloadProc
-
-func PolygonMode(face Enum, mode Enum) {
-	bindlib.CCall2(__imp_glPolygonMode.Addr(), bindlib.MarshallSyscall(face), bindlib.MarshallSyscall(mode))
-}
-
-var __imp_glPolygonOffset bindlib.PreloadProc
-
-func PolygonOffset(factor Float, units Float) {
-	bindlib.CCall2(__imp_glPolygonOffset.Addr(), bindlib.MarshallSyscall(factor), bindlib.MarshallSyscall(units))
-}
-
-var __imp_glPolygonStipple bindlib.PreloadProc
-
-func PolygonStipple(mask *Ubyte) {
-	bindlib.CCall1(__imp_glPolygonStipple.Addr(), bindlib.MarshallSyscall(mask))
-}
-
-var __imp_glPopAttrib bindlib.PreloadProc
-
-func PopAttrib() { bindlib.CCall0(__imp_glPopAttrib.Addr()) }
-
-var __imp_glPopClientAttrib bindlib.PreloadProc
-
-func PopClientAttrib() { bindlib.CCall0(__imp_glPopClientAttrib.Addr()) }
-
-var __imp_glPopMatrix bindlib.PreloadProc
-
-func PopMatrix() { bindlib.CCall0(__imp_glPopMatrix.Addr()) }
-
-var __imp_glPopName bindlib.PreloadProc
-
-func PopName() { bindlib.CCall0(__imp_glPopName.Addr()) }
-
-var __imp_glPrioritizeTextures bindlib.PreloadProc
-
-func PrioritizeTextures(n Sizei, textures *Uint, priorities *Clampf) {
-	bindlib.CCall3(__imp_glPrioritizeTextures.Addr(), bindlib.MarshallSyscall(n), bindlib.MarshallSyscall(textures), bindlib.MarshallSyscall(priorities))
-}
-
-var __imp_glPushAttrib bindlib.PreloadProc
-
-func PushAttrib(mask Bitfield) {
-	bindlib.CCall1(__imp_glPushAttrib.Addr(), bindlib.MarshallSyscall(mask))
-}
-
-var __imp_glPushClientAttrib bindlib.PreloadProc
-
-func PushClientAttrib(mask Bitfield) {
-	bindlib.CCall1(__imp_glPushClientAttrib.Addr(), bindlib.MarshallSyscall(mask))
-}
-
-var __imp_glPushMatrix bindlib.PreloadProc
-
-func PushMatrix() { bindlib.CCall0(__imp_glPushMatrix.Addr()) }
-
-var __imp_glPushName bindlib.PreloadProc
-
-func PushName(name Uint) { bindlib.CCall1(__imp_glPushName.Addr(), bindlib.MarshallSyscall(name)) }
-
-var __imp_glRasterPos2d bindlib.PreloadProc
-
-func RasterPos2d(x Double, y Double) {
-	bindlib.CCall2(__imp_glRasterPos2d.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glRasterPos2dv bindlib.PreloadProc
-
-func RasterPos2dv(v *Double) { bindlib.CCall1(__imp_glRasterPos2dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos2f bindlib.PreloadProc
-
-func RasterPos2f(x Float, y Float) {
-	bindlib.CCall2(__imp_glRasterPos2f.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glRasterPos2fv bindlib.PreloadProc
-
-func RasterPos2fv(v *Float) { bindlib.CCall1(__imp_glRasterPos2fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos2i bindlib.PreloadProc
-
-func RasterPos2i(x Int, y Int) {
-	bindlib.CCall2(__imp_glRasterPos2i.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glRasterPos2iv bindlib.PreloadProc
-
-func RasterPos2iv(v *Int) { bindlib.CCall1(__imp_glRasterPos2iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos2s bindlib.PreloadProc
-
-func RasterPos2s(x Short, y Short) {
-	bindlib.CCall2(__imp_glRasterPos2s.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glRasterPos2sv bindlib.PreloadProc
-
-func RasterPos2sv(v *Short) { bindlib.CCall1(__imp_glRasterPos2sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos3d bindlib.PreloadProc
-
-func RasterPos3d(x Double, y Double, z Double) {
-	bindlib.CCall3(__imp_glRasterPos3d.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glRasterPos3dv bindlib.PreloadProc
-
-func RasterPos3dv(v *Double) { bindlib.CCall1(__imp_glRasterPos3dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos3f bindlib.PreloadProc
-
-func RasterPos3f(x Float, y Float, z Float) {
-	bindlib.CCall3(__imp_glRasterPos3f.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glRasterPos3fv bindlib.PreloadProc
-
-func RasterPos3fv(v *Float) { bindlib.CCall1(__imp_glRasterPos3fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos3i bindlib.PreloadProc
-
-func RasterPos3i(x Int, y Int, z Int) {
-	bindlib.CCall3(__imp_glRasterPos3i.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glRasterPos3iv bindlib.PreloadProc
-
-func RasterPos3iv(v *Int) { bindlib.CCall1(__imp_glRasterPos3iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos3s bindlib.PreloadProc
-
-func RasterPos3s(x Short, y Short, z Short) {
-	bindlib.CCall3(__imp_glRasterPos3s.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glRasterPos3sv bindlib.PreloadProc
-
-func RasterPos3sv(v *Short) { bindlib.CCall1(__imp_glRasterPos3sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos4d bindlib.PreloadProc
-
-func RasterPos4d(x Double, y Double, z Double, w Double) {
-	bindlib.CCall4(__imp_glRasterPos4d.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glRasterPos4dv bindlib.PreloadProc
-
-func RasterPos4dv(v *Double) { bindlib.CCall1(__imp_glRasterPos4dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos4f bindlib.PreloadProc
-
-func RasterPos4f(x Float, y Float, z Float, w Float) {
-	bindlib.CCall4(__imp_glRasterPos4f.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glRasterPos4fv bindlib.PreloadProc
-
-func RasterPos4fv(v *Float) { bindlib.CCall1(__imp_glRasterPos4fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos4i bindlib.PreloadProc
-
-func RasterPos4i(x Int, y Int, z Int, w Int) {
-	bindlib.CCall4(__imp_glRasterPos4i.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glRasterPos4iv bindlib.PreloadProc
-
-func RasterPos4iv(v *Int) { bindlib.CCall1(__imp_glRasterPos4iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glRasterPos4s bindlib.PreloadProc
-
-func RasterPos4s(x Short, y Short, z Short, w Short) {
-	bindlib.CCall4(__imp_glRasterPos4s.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glRasterPos4sv bindlib.PreloadProc
-
-func RasterPos4sv(v *Short) { bindlib.CCall1(__imp_glRasterPos4sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glReadBuffer bindlib.PreloadProc
-
-func ReadBuffer(mode Enum) { bindlib.CCall1(__imp_glReadBuffer.Addr(), bindlib.MarshallSyscall(mode)) }
-
-var __imp_glReadPixels bindlib.PreloadProc
-
-func ReadPixels(x Int, y Int, width Sizei, height Sizei, format Enum, _type Enum, pixels *Void) {
-	bindlib.CCall7(__imp_glReadPixels.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(pixels))
-}
-
-var __imp_glRectd bindlib.PreloadProc
-
-func Rectd(x1 Double, y1 Double, x2 Double, y2 Double) {
-	bindlib.CCall4(__imp_glRectd.Addr(), bindlib.MarshallSyscall(x1), bindlib.MarshallSyscall(y1), bindlib.MarshallSyscall(x2), bindlib.MarshallSyscall(y2))
-}
-
-var __imp_glRectdv bindlib.PreloadProc
-
-func Rectdv(v1 *Double, v2 *Double) {
-	bindlib.CCall2(__imp_glRectdv.Addr(), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2))
-}
-
-var __imp_glRectf bindlib.PreloadProc
-
-func Rectf(x1 Float, y1 Float, x2 Float, y2 Float) {
-	bindlib.CCall4(__imp_glRectf.Addr(), bindlib.MarshallSyscall(x1), bindlib.MarshallSyscall(y1), bindlib.MarshallSyscall(x2), bindlib.MarshallSyscall(y2))
-}
-
-var __imp_glRectfv bindlib.PreloadProc
-
-func Rectfv(v1 *Float, v2 *Float) {
-	bindlib.CCall2(__imp_glRectfv.Addr(), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2))
-}
-
-var __imp_glRecti bindlib.PreloadProc
-
-func Recti(x1 Int, y1 Int, x2 Int, y2 Int) {
-	bindlib.CCall4(__imp_glRecti.Addr(), bindlib.MarshallSyscall(x1), bindlib.MarshallSyscall(y1), bindlib.MarshallSyscall(x2), bindlib.MarshallSyscall(y2))
-}
-
-var __imp_glRectiv bindlib.PreloadProc
-
-func Rectiv(v1 *Int, v2 *Int) {
-	bindlib.CCall2(__imp_glRectiv.Addr(), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2))
-}
-
-var __imp_glRects bindlib.PreloadProc
-
-func Rects(x1 Short, y1 Short, x2 Short, y2 Short) {
-	bindlib.CCall4(__imp_glRects.Addr(), bindlib.MarshallSyscall(x1), bindlib.MarshallSyscall(y1), bindlib.MarshallSyscall(x2), bindlib.MarshallSyscall(y2))
-}
-
-var __imp_glRectsv bindlib.PreloadProc
-
-func Rectsv(v1 *Short, v2 *Short) {
-	bindlib.CCall2(__imp_glRectsv.Addr(), bindlib.MarshallSyscall(v1), bindlib.MarshallSyscall(v2))
-}
-
-var __imp_glRenderMode bindlib.PreloadProc
-
-func RenderMode(mode Enum) Int {
-	__res := bindlib.CCall1(__imp_glRenderMode.Addr(), bindlib.MarshallSyscall(mode))
-	return bindlib.UnmarshallSyscall[Int](__res)
-}
-
-var __imp_glRotated bindlib.PreloadProc
-
-func Rotated(angle Double, x Double, y Double, z Double) {
-	bindlib.CCall4(__imp_glRotated.Addr(), bindlib.MarshallSyscall(angle), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glRotatef bindlib.PreloadProc
-
-func Rotatef(angle Float, x Float, y Float, z Float) {
-	bindlib.CCall4(__imp_glRotatef.Addr(), bindlib.MarshallSyscall(angle), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glScaled bindlib.PreloadProc
-
-func Scaled(x Double, y Double, z Double) {
-	bindlib.CCall3(__imp_glScaled.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glScalef bindlib.PreloadProc
-
-func Scalef(x Float, y Float, z Float) {
-	bindlib.CCall3(__imp_glScalef.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glScissor bindlib.PreloadProc
-
-func Scissor(x Int, y Int, width Sizei, height Sizei) {
-	bindlib.CCall4(__imp_glScissor.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height))
-}
-
-var __imp_glSelectBuffer bindlib.PreloadProc
-
-func SelectBuffer(size Sizei, buffer *Uint) {
-	bindlib.CCall2(__imp_glSelectBuffer.Addr(), bindlib.MarshallSyscall(size), bindlib.MarshallSyscall(buffer))
-}
-
-var __imp_glShadeModel bindlib.PreloadProc
-
-func ShadeModel(mode Enum) { bindlib.CCall1(__imp_glShadeModel.Addr(), bindlib.MarshallSyscall(mode)) }
-
-var __imp_glStencilFunc bindlib.PreloadProc
-
-func StencilFunc(_func Enum, ref Int, mask Uint) {
-	bindlib.CCall3(__imp_glStencilFunc.Addr(), bindlib.MarshallSyscall(_func), bindlib.MarshallSyscall(ref), bindlib.MarshallSyscall(mask))
-}
-
-var __imp_glStencilMask bindlib.PreloadProc
-
-func StencilMask(mask Uint) {
-	bindlib.CCall1(__imp_glStencilMask.Addr(), bindlib.MarshallSyscall(mask))
-}
-
-var __imp_glStencilOp bindlib.PreloadProc
-
-func StencilOp(fail Enum, zfail Enum, zpass Enum) {
-	bindlib.CCall3(__imp_glStencilOp.Addr(), bindlib.MarshallSyscall(fail), bindlib.MarshallSyscall(zfail), bindlib.MarshallSyscall(zpass))
-}
-
-var __imp_glTexCoord1d bindlib.PreloadProc
-
-func TexCoord1d(s Double) { bindlib.CCall1(__imp_glTexCoord1d.Addr(), bindlib.MarshallSyscall(s)) }
-
-var __imp_glTexCoord1dv bindlib.PreloadProc
-
-func TexCoord1dv(v *Double) { bindlib.CCall1(__imp_glTexCoord1dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord1f bindlib.PreloadProc
-
-func TexCoord1f(s Float) { bindlib.CCall1(__imp_glTexCoord1f.Addr(), bindlib.MarshallSyscall(s)) }
-
-var __imp_glTexCoord1fv bindlib.PreloadProc
-
-func TexCoord1fv(v *Float) { bindlib.CCall1(__imp_glTexCoord1fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord1i bindlib.PreloadProc
-
-func TexCoord1i(s Int) { bindlib.CCall1(__imp_glTexCoord1i.Addr(), bindlib.MarshallSyscall(s)) }
-
-var __imp_glTexCoord1iv bindlib.PreloadProc
-
-func TexCoord1iv(v *Int) { bindlib.CCall1(__imp_glTexCoord1iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord1s bindlib.PreloadProc
-
-func TexCoord1s(s Short) { bindlib.CCall1(__imp_glTexCoord1s.Addr(), bindlib.MarshallSyscall(s)) }
-
-var __imp_glTexCoord1sv bindlib.PreloadProc
-
-func TexCoord1sv(v *Short) { bindlib.CCall1(__imp_glTexCoord1sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord2d bindlib.PreloadProc
-
-func TexCoord2d(s Double, t Double) {
-	bindlib.CCall2(__imp_glTexCoord2d.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t))
-}
-
-var __imp_glTexCoord2dv bindlib.PreloadProc
-
-func TexCoord2dv(v *Double) { bindlib.CCall1(__imp_glTexCoord2dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord2f bindlib.PreloadProc
-
-func TexCoord2f(s Float, t Float) {
-	bindlib.CCall2(__imp_glTexCoord2f.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t))
-}
-
-var __imp_glTexCoord2fv bindlib.PreloadProc
-
-func TexCoord2fv(v *Float) { bindlib.CCall1(__imp_glTexCoord2fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord2i bindlib.PreloadProc
-
-func TexCoord2i(s Int, t Int) {
-	bindlib.CCall2(__imp_glTexCoord2i.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t))
-}
-
-var __imp_glTexCoord2iv bindlib.PreloadProc
-
-func TexCoord2iv(v *Int) { bindlib.CCall1(__imp_glTexCoord2iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord2s bindlib.PreloadProc
-
-func TexCoord2s(s Short, t Short) {
-	bindlib.CCall2(__imp_glTexCoord2s.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t))
-}
-
-var __imp_glTexCoord2sv bindlib.PreloadProc
-
-func TexCoord2sv(v *Short) { bindlib.CCall1(__imp_glTexCoord2sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord3d bindlib.PreloadProc
-
-func TexCoord3d(s Double, t Double, r Double) {
-	bindlib.CCall3(__imp_glTexCoord3d.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r))
-}
-
-var __imp_glTexCoord3dv bindlib.PreloadProc
-
-func TexCoord3dv(v *Double) { bindlib.CCall1(__imp_glTexCoord3dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord3f bindlib.PreloadProc
-
-func TexCoord3f(s Float, t Float, r Float) {
-	bindlib.CCall3(__imp_glTexCoord3f.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r))
-}
-
-var __imp_glTexCoord3fv bindlib.PreloadProc
-
-func TexCoord3fv(v *Float) { bindlib.CCall1(__imp_glTexCoord3fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord3i bindlib.PreloadProc
-
-func TexCoord3i(s Int, t Int, r Int) {
-	bindlib.CCall3(__imp_glTexCoord3i.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r))
-}
-
-var __imp_glTexCoord3iv bindlib.PreloadProc
-
-func TexCoord3iv(v *Int) { bindlib.CCall1(__imp_glTexCoord3iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord3s bindlib.PreloadProc
-
-func TexCoord3s(s Short, t Short, r Short) {
-	bindlib.CCall3(__imp_glTexCoord3s.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r))
-}
-
-var __imp_glTexCoord3sv bindlib.PreloadProc
-
-func TexCoord3sv(v *Short) { bindlib.CCall1(__imp_glTexCoord3sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord4d bindlib.PreloadProc
-
-func TexCoord4d(s Double, t Double, r Double, q Double) {
-	bindlib.CCall4(__imp_glTexCoord4d.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r), bindlib.MarshallSyscall(q))
-}
-
-var __imp_glTexCoord4dv bindlib.PreloadProc
-
-func TexCoord4dv(v *Double) { bindlib.CCall1(__imp_glTexCoord4dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord4f bindlib.PreloadProc
-
-func TexCoord4f(s Float, t Float, r Float, q Float) {
-	bindlib.CCall4(__imp_glTexCoord4f.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r), bindlib.MarshallSyscall(q))
-}
-
-var __imp_glTexCoord4fv bindlib.PreloadProc
-
-func TexCoord4fv(v *Float) { bindlib.CCall1(__imp_glTexCoord4fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord4i bindlib.PreloadProc
-
-func TexCoord4i(s Int, t Int, r Int, q Int) {
-	bindlib.CCall4(__imp_glTexCoord4i.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r), bindlib.MarshallSyscall(q))
-}
-
-var __imp_glTexCoord4iv bindlib.PreloadProc
-
-func TexCoord4iv(v *Int) { bindlib.CCall1(__imp_glTexCoord4iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoord4s bindlib.PreloadProc
-
-func TexCoord4s(s Short, t Short, r Short, q Short) {
-	bindlib.CCall4(__imp_glTexCoord4s.Addr(), bindlib.MarshallSyscall(s), bindlib.MarshallSyscall(t), bindlib.MarshallSyscall(r), bindlib.MarshallSyscall(q))
-}
-
-var __imp_glTexCoord4sv bindlib.PreloadProc
-
-func TexCoord4sv(v *Short) { bindlib.CCall1(__imp_glTexCoord4sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glTexCoordPointer bindlib.PreloadProc
-
-func TexCoordPointer(size Int, _type Enum, stride Sizei, pointer *Void) {
-	bindlib.CCall4(__imp_glTexCoordPointer.Addr(), bindlib.MarshallSyscall(size), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(pointer))
-}
-
-var __imp_glTexEnvf bindlib.PreloadProc
-
-func TexEnvf(target Enum, pname Enum, param Float) {
-	bindlib.CCall3(__imp_glTexEnvf.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glTexEnvfv bindlib.PreloadProc
-
-func TexEnvfv(target Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glTexEnvfv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glTexEnvi bindlib.PreloadProc
-
-func TexEnvi(target Enum, pname Enum, param Int) {
-	bindlib.CCall3(__imp_glTexEnvi.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glTexEnviv bindlib.PreloadProc
-
-func TexEnviv(target Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glTexEnviv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glTexGend bindlib.PreloadProc
-
-func TexGend(coord Enum, pname Enum, param Double) {
-	bindlib.CCall3(__imp_glTexGend.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glTexGendv bindlib.PreloadProc
-
-func TexGendv(coord Enum, pname Enum, params *Double) {
-	bindlib.CCall3(__imp_glTexGendv.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glTexGenf bindlib.PreloadProc
-
-func TexGenf(coord Enum, pname Enum, param Float) {
-	bindlib.CCall3(__imp_glTexGenf.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glTexGenfv bindlib.PreloadProc
-
-func TexGenfv(coord Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glTexGenfv.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glTexGeni bindlib.PreloadProc
-
-func TexGeni(coord Enum, pname Enum, param Int) {
-	bindlib.CCall3(__imp_glTexGeni.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glTexGeniv bindlib.PreloadProc
-
-func TexGeniv(coord Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glTexGeniv.Addr(), bindlib.MarshallSyscall(coord), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glTexImage1D bindlib.PreloadProc
-
-func TexImage1D(target Enum, level Int, internalformat Int, width Sizei, border Int, format Enum, _type Enum, pixels *Void) {
-	bindlib.CCall8(__imp_glTexImage1D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(internalformat), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(border), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(pixels))
-}
-
-var __imp_glTexImage2D bindlib.PreloadProc
-
-func TexImage2D(target Enum, level Int, internalformat Int, width Sizei, height Sizei, border Int, format Enum, _type Enum, pixels *Void) {
-	bindlib.CCall9(__imp_glTexImage2D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(internalformat), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(border), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(pixels))
-}
-
-var __imp_glTexParameterf bindlib.PreloadProc
-
-func TexParameterf(target Enum, pname Enum, param Float) {
-	bindlib.CCall3(__imp_glTexParameterf.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glTexParameterfv bindlib.PreloadProc
-
-func TexParameterfv(target Enum, pname Enum, params *Float) {
-	bindlib.CCall3(__imp_glTexParameterfv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glTexParameteri bindlib.PreloadProc
-
-func TexParameteri(target Enum, pname Enum, param Int) {
-	bindlib.CCall3(__imp_glTexParameteri.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(param))
-}
-
-var __imp_glTexParameteriv bindlib.PreloadProc
-
-func TexParameteriv(target Enum, pname Enum, params *Int) {
-	bindlib.CCall3(__imp_glTexParameteriv.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(pname), bindlib.MarshallSyscall(params))
-}
-
-var __imp_glTexSubImage1D bindlib.PreloadProc
-
-func TexSubImage1D(target Enum, level Int, xoffset Int, width Sizei, format Enum, _type Enum, pixels *Void) {
-	bindlib.CCall7(__imp_glTexSubImage1D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(xoffset), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(pixels))
-}
-
-var __imp_glTexSubImage2D bindlib.PreloadProc
-
-func TexSubImage2D(target Enum, level Int, xoffset Int, yoffset Int, width Sizei, height Sizei, format Enum, _type Enum, pixels *Void) {
-	bindlib.CCall9(__imp_glTexSubImage2D.Addr(), bindlib.MarshallSyscall(target), bindlib.MarshallSyscall(level), bindlib.MarshallSyscall(xoffset), bindlib.MarshallSyscall(yoffset), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height), bindlib.MarshallSyscall(format), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(pixels))
-}
-
-var __imp_glTranslated bindlib.PreloadProc
-
-func Translated(x Double, y Double, z Double) {
-	bindlib.CCall3(__imp_glTranslated.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glTranslatef bindlib.PreloadProc
-
-func Translatef(x Float, y Float, z Float) {
-	bindlib.CCall3(__imp_glTranslatef.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glVertex2d bindlib.PreloadProc
-
-func Vertex2d(x Double, y Double) {
-	bindlib.CCall2(__imp_glVertex2d.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glVertex2dv bindlib.PreloadProc
-
-func Vertex2dv(v *Double) { bindlib.CCall1(__imp_glVertex2dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex2f bindlib.PreloadProc
-
-func Vertex2f(x Float, y Float) {
-	bindlib.CCall2(__imp_glVertex2f.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glVertex2fv bindlib.PreloadProc
-
-func Vertex2fv(v *Float) { bindlib.CCall1(__imp_glVertex2fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex2i bindlib.PreloadProc
-
-func Vertex2i(x Int, y Int) {
-	bindlib.CCall2(__imp_glVertex2i.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glVertex2iv bindlib.PreloadProc
-
-func Vertex2iv(v *Int) { bindlib.CCall1(__imp_glVertex2iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex2s bindlib.PreloadProc
-
-func Vertex2s(x Short, y Short) {
-	bindlib.CCall2(__imp_glVertex2s.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y))
-}
-
-var __imp_glVertex2sv bindlib.PreloadProc
-
-func Vertex2sv(v *Short) { bindlib.CCall1(__imp_glVertex2sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex3d bindlib.PreloadProc
-
-func Vertex3d(x Double, y Double, z Double) {
-	bindlib.CCall3(__imp_glVertex3d.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glVertex3dv bindlib.PreloadProc
-
-func Vertex3dv(v *Double) { bindlib.CCall1(__imp_glVertex3dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex3f bindlib.PreloadProc
-
-func Vertex3f(x Float, y Float, z Float) {
-	bindlib.CCall3(__imp_glVertex3f.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glVertex3fv bindlib.PreloadProc
-
-func Vertex3fv(v *Float) { bindlib.CCall1(__imp_glVertex3fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex3i bindlib.PreloadProc
-
-func Vertex3i(x Int, y Int, z Int) {
-	bindlib.CCall3(__imp_glVertex3i.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glVertex3iv bindlib.PreloadProc
-
-func Vertex3iv(v *Int) { bindlib.CCall1(__imp_glVertex3iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex3s bindlib.PreloadProc
-
-func Vertex3s(x Short, y Short, z Short) {
-	bindlib.CCall3(__imp_glVertex3s.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z))
-}
-
-var __imp_glVertex3sv bindlib.PreloadProc
-
-func Vertex3sv(v *Short) { bindlib.CCall1(__imp_glVertex3sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex4d bindlib.PreloadProc
-
-func Vertex4d(x Double, y Double, z Double, w Double) {
-	bindlib.CCall4(__imp_glVertex4d.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glVertex4dv bindlib.PreloadProc
-
-func Vertex4dv(v *Double) { bindlib.CCall1(__imp_glVertex4dv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex4f bindlib.PreloadProc
-
-func Vertex4f(x Float, y Float, z Float, w Float) {
-	bindlib.CCall4(__imp_glVertex4f.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glVertex4fv bindlib.PreloadProc
-
-func Vertex4fv(v *Float) { bindlib.CCall1(__imp_glVertex4fv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex4i bindlib.PreloadProc
-
-func Vertex4i(x Int, y Int, z Int, w Int) {
-	bindlib.CCall4(__imp_glVertex4i.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glVertex4iv bindlib.PreloadProc
-
-func Vertex4iv(v *Int) { bindlib.CCall1(__imp_glVertex4iv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertex4s bindlib.PreloadProc
-
-func Vertex4s(x Short, y Short, z Short, w Short) {
-	bindlib.CCall4(__imp_glVertex4s.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(z), bindlib.MarshallSyscall(w))
-}
-
-var __imp_glVertex4sv bindlib.PreloadProc
-
-func Vertex4sv(v *Short) { bindlib.CCall1(__imp_glVertex4sv.Addr(), bindlib.MarshallSyscall(v)) }
-
-var __imp_glVertexPointer bindlib.PreloadProc
-
-func VertexPointer(size Int, _type Enum, stride Sizei, pointer *Void) {
-	bindlib.CCall4(__imp_glVertexPointer.Addr(), bindlib.MarshallSyscall(size), bindlib.MarshallSyscall(_type), bindlib.MarshallSyscall(stride), bindlib.MarshallSyscall(pointer))
-}
-
-var __imp_glViewport bindlib.PreloadProc
-
-func Viewport(x Int, y Int, width Sizei, height Sizei) {
-	bindlib.CCall4(__imp_glViewport.Addr(), bindlib.MarshallSyscall(x), bindlib.MarshallSyscall(y), bindlib.MarshallSyscall(width), bindlib.MarshallSyscall(height))
-}
-
-var __imp_glfwInit bindlib.PreloadProc
 
 // @brief Initializes the GLFW library.
 // This function initializes the GLFW library.  Before most GLFW functions can
@@ -3316,7 +1025,7 @@ var __imp_glfwInitAllocator bindlib.PreloadProc
 // @ref glfwInit
 //
 // @since Added in version 3.4.
-func InitAllocator(allocator unsafe.Pointer) {
+func InitAllocator(allocator *Allocator) {
 	bindlib.CCall1(__imp_glfwInitAllocator.Addr(), bindlib.MarshallSyscall(allocator))
 }
 
@@ -3958,9 +1667,9 @@ var __imp_glfwGetVideoModes bindlib.PreloadProc
 //
 // @glfw3
 // Changed to return an array of modes for a specific monitor.
-func GetVideoModes(monitor unsafe.Pointer, count *int32) unsafe.Pointer {
+func GetVideoModes(monitor unsafe.Pointer, count *int32) *Vidmode {
 	__res := bindlib.CCall2(__imp_glfwGetVideoModes.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(count))
-	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
+	return bindlib.UnmarshallSyscall[*Vidmode](__res)
 }
 
 var __imp_glfwGetVideoMode bindlib.PreloadProc
@@ -3998,9 +1707,9 @@ var __imp_glfwGetVideoMode bindlib.PreloadProc
 // @ref glfwGetVideoModes
 //
 // @since Added in version 3.0.  Replaces `glfwGetDesktopMode`.
-func GetVideoMode(monitor unsafe.Pointer) unsafe.Pointer {
+func GetVideoMode(monitor unsafe.Pointer) *Vidmode {
 	__res := bindlib.CCall1(__imp_glfwGetVideoMode.Addr(), bindlib.MarshallSyscall(monitor))
-	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
+	return bindlib.UnmarshallSyscall[*Vidmode](__res)
 }
 
 var __imp_glfwSetGamma bindlib.PreloadProc
@@ -4093,9 +1802,9 @@ var __imp_glfwGetGammaRamp bindlib.PreloadProc
 // @ref monitor_gamma
 //
 // @since Added in version 3.0.
-func GetGammaRamp(monitor unsafe.Pointer) unsafe.Pointer {
+func GetGammaRamp(monitor unsafe.Pointer) *Gammaramp {
 	__res := bindlib.CCall1(__imp_glfwGetGammaRamp.Addr(), bindlib.MarshallSyscall(monitor))
-	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
+	return bindlib.UnmarshallSyscall[*Gammaramp](__res)
 }
 
 var __imp_glfwSetGammaRamp bindlib.PreloadProc
@@ -4150,7 +1859,7 @@ var __imp_glfwSetGammaRamp bindlib.PreloadProc
 // @ref monitor_gamma
 //
 // @since Added in version 3.0.
-func SetGammaRamp(monitor unsafe.Pointer, ramp unsafe.Pointer) {
+func SetGammaRamp(monitor unsafe.Pointer, ramp *Gammaramp) {
 	bindlib.CCall2(__imp_glfwSetGammaRamp.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(ramp))
 }
 
@@ -4732,7 +2441,7 @@ var __imp_glfwSetWindowIcon bindlib.PreloadProc
 // @ref window_icon
 //
 // @since Added in version 3.2.
-func SetWindowIcon(window unsafe.Pointer, count int32, images unsafe.Pointer) {
+func SetWindowIcon(window unsafe.Pointer, count int32, images *Image) {
 	bindlib.CCall3(__imp_glfwSetWindowIcon.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(count), bindlib.MarshallSyscall(images))
 }
 
@@ -6876,7 +4585,7 @@ var __imp_glfwCreateCursor bindlib.PreloadProc
 // @ref glfwCreateStandardCursor
 //
 // @since Added in version 3.1.
-func CreateCursor(image unsafe.Pointer, xhot int32, yhot int32) unsafe.Pointer {
+func CreateCursor(image *Image, xhot int32, yhot int32) unsafe.Pointer {
 	__res := bindlib.CCall3(__imp_glfwCreateCursor.Addr(), bindlib.MarshallSyscall(image), bindlib.MarshallSyscall(xhot), bindlib.MarshallSyscall(yhot))
 	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
@@ -8004,7 +5713,7 @@ var __imp_glfwGetGamepadState bindlib.PreloadProc
 // @ref glfwJoystickIsGamepad
 //
 // @since Added in version 3.3.
-func GetGamepadState(jid int32, state unsafe.Pointer) int32 {
+func GetGamepadState(jid int32, state *Gamepadstate) int32 {
 	__res := bindlib.CCall2(__imp_glfwGetGamepadState.Addr(), bindlib.MarshallSyscall(jid), bindlib.MarshallSyscall(state))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }
