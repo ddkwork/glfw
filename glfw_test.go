@@ -16,7 +16,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-//go:embed glfw3.dll
+//go:embed glfw.dll
 var dllData []byte
 
 func init() {
