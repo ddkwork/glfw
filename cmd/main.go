@@ -12,7 +12,8 @@ import (
 func main() {
 	glfw.Init()
 	defer glfw.Terminate()
-	w := glfw.CreateWindow(640, 480, StringToBytePointer("Custom Cursor"), nil, nil)
+	//glfw.GetVersion()
+	w := glfw.CreateWindow(640, 480, glfw.StringToBytePointer("Custom Cursor"), nil, nil)
 	glfw.MakeContextCurrent(w)
 
 	// Creating a custom cursor.
@@ -40,16 +41,16 @@ func main() {
 	c := purego.NewCallback(func(win uintptr, path_count int, paths **byte) uintptr {
 		convertedPaths := make([]string, path_count)
 		for i := 0; i < path_count; i++ {
-			convertedPaths[i] = BytePointerToString(*(**byte)(unsafe.Pointer(uintptr(unsafe.Pointer(paths)) + uintptr(i)*unsafe.Sizeof(*paths))))
+			convertedPaths[i] = glfw.BytePointerToString(*(**byte)(unsafe.Pointer(uintptr(unsafe.Pointer(paths)) + uintptr(i)*unsafe.Sizeof(*paths))))
 		}
 		fmt.Println(convertedPaths) // 打印路径以验证
 		return uintptr(w)
 	})
 	glfw.SetDropCallback(w, glfw.Dropfun(c))
 
-	glfw.SetClipboardString(w, StringToBytePointer("Hello, World!"))
+	glfw.SetClipboardString(w, glfw.StringToBytePointer("Hello, World!"))
 	glfw.SetCharCallback(w, glfw.Charfun(purego.NewCallback(func(s *byte) uintptr {
-		println(BytePointerToString(s))
+		println(glfw.BytePointerToString(s))
 		return uintptr(w)
 	})))
 
@@ -62,7 +63,7 @@ func main() {
 	//w.SetIcon([]image.Image{whiteTriangle})
 	//glfw.SetWindowIcon(w, 1, unsafe.Pointer(whiteTriangle))
 
-	for !Boolean2Bool(glfw.WindowShouldClose(w)) {
+	for !glfw.Boolean2Bool(glfw.WindowShouldClose(w)) {
 		glfw.SwapBuffers(w)
 		glfw.PollEvents()
 	}
@@ -102,9 +103,6 @@ func main() {
 	// SetWindowIcon(w,32, func() {})
 
 }
-func Boolean2Bool(b glfw.Bool) bool {
-	return int(b) == glfw.True
-}
 
 var whiteTriangle = func() *image.NRGBA {
 	c := color.NRGBA{R: 0xFF, G: 0xFF, B: 0xFF, A: 0xFF}
@@ -117,18 +115,3 @@ var whiteTriangle = func() *image.NRGBA {
 	}
 	return m
 }()
-
-func StringToBytePointer(s string) *byte {
-	bytes := []byte(s)
-	ptr := &bytes[0]
-	return ptr
-}
-
-func BytePointerToString(ptr *byte) string {
-	var bytes []byte
-	for *ptr != 0 {
-		bytes = append(bytes, *ptr)
-		ptr = (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(ptr)) + 1))
-	}
-	return string(bytes)
-}

@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"unsafe"
 )
 
 //go:embed glfw.dll
@@ -30,4 +31,23 @@ func init() {
 		stream.WriteTruncate(filePath, dllData)
 	}
 	mylog.Check2(GengoLibrary.LoadFrom(filePath))
+}
+
+func StringToBytePointer(s string) *byte {
+	bytes := []byte(s)
+	ptr := &bytes[0]
+	return ptr
+}
+
+func BytePointerToString(ptr *byte) string {
+	var bytes []byte
+	for *ptr != 0 {
+		bytes = append(bytes, *ptr)
+		ptr = (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(ptr)) + 1))
+	}
+	return string(bytes)
+}
+
+func Boolean2Bool(b Bool) bool {
+	return int(b) == True
 }
