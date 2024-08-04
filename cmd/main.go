@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ddkwork/glfw"
 	"github.com/ebitengine/purego"
 	"image"
@@ -28,6 +29,12 @@ func main() {
 	})
 	cursor := glfw.CreateCursor(unsafe.Pointer(callback), 0, 0)
 	glfw.SetCursor(w, cursor)
+
+	newCallback := purego.NewCallback(func(window uintptr, entered int) uintptr {
+		fmt.Println("Cursor Enter")
+		return uintptr(w)
+	})
+	glfw.SetCursorEnterCallback(w, glfw.Cursorenterfun(newCallback))
 
 	// Setting a custom cursor.
 	//w.SetIcon([]image.Image{whiteTriangle})
