@@ -36,11 +36,23 @@ func main() {
 	})
 	glfw.SetCursorEnterCallback(w, glfw.Cursorenterfun(newCallback))
 
-	c := purego.NewCallback(func(win uintptr, path_count int, files glfw.Charfun) uintptr {
-		paths := make([]string, path_count)
+	//typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
+	//c := purego.NewCallback(func(win uintptr, path_count int, files **byte) uintptr {
+	//	paths := make([]string, path_count)
+	//	for i := 0; i < path_count; i++ {
+	//		paths[i] = BytePointerToString((files)) //todo not working
+	//	}
+	//	return uintptr(w)
+	//})
+	//glfw.SetDropCallback(w, glfw.Dropfun(c))
+
+	//typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
+	c := purego.NewCallback(func(win uintptr, path_count int, paths **byte) uintptr {
+		convertedPaths := make([]string, path_count)
 		for i := 0; i < path_count; i++ {
-			paths[i] = BytePointerToString((*byte)(files)) //todo not working
+			convertedPaths[i] = BytePointerToString(*(**byte)(unsafe.Pointer(uintptr(unsafe.Pointer(paths)) + uintptr(i)*unsafe.Sizeof(*paths))))
 		}
+		fmt.Println(convertedPaths) // 打印路径以验证
 		return uintptr(w)
 	})
 	glfw.SetDropCallback(w, glfw.Dropfun(c))
