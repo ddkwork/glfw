@@ -90,8 +90,28 @@ type (
 	Int16T             = int16
 	Int32T             = int32
 	Int64T             = int64
-	Bool               = uint8
+	Bool               = int32
 	IntptrT            = *int32
+	//type Uint8T = uint8
+	//type Uint16T = uint16
+	//type Uint32T = uint32
+	//type Uint64T = uint64
+	//type Int8T = int8
+	//type Int16T = int16
+	//type Int32T = int32
+	//type Int64T = int64
+	//type Bool = int32
+	//type IntptrT = *int32
+	//type Uint8T = uint8
+	//type Uint16T = uint16
+	//type Uint32T = uint32
+	//type Uint64T = uint64
+	//type Int8T = int8
+	//type Int16T = int16
+	//type Int32T = int32
+	//type Int64T = int64
+	//type Bool = int32
+	//type IntptrT = *int32
 	// @brief Client API function pointer type.
 	// Generic function pointer used for returning client API function pointers
 	// without forcing a cast from a regular pointer.
@@ -1025,7 +1045,7 @@ var __imp_glfwInitAllocator bindlib.PreloadProc
 // @ref glfwInit
 //
 // @since Added in version 3.4.
-func InitAllocator(allocator *Allocator) {
+func InitAllocator(allocator unsafe.Pointer) {
 	bindlib.CCall1(__imp_glfwInitAllocator.Addr(), bindlib.MarshallSyscall(allocator))
 }
 
@@ -1667,9 +1687,9 @@ var __imp_glfwGetVideoModes bindlib.PreloadProc
 //
 // @glfw3
 // Changed to return an array of modes for a specific monitor.
-func GetVideoModes(monitor unsafe.Pointer, count *int32) *Vidmode {
+func GetVideoModes(monitor unsafe.Pointer, count *int32) unsafe.Pointer {
 	__res := bindlib.CCall2(__imp_glfwGetVideoModes.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(count))
-	return bindlib.UnmarshallSyscall[*Vidmode](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwGetVideoMode bindlib.PreloadProc
@@ -1707,9 +1727,9 @@ var __imp_glfwGetVideoMode bindlib.PreloadProc
 // @ref glfwGetVideoModes
 //
 // @since Added in version 3.0.  Replaces `glfwGetDesktopMode`.
-func GetVideoMode(monitor unsafe.Pointer) *Vidmode {
+func GetVideoMode(monitor unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetVideoMode.Addr(), bindlib.MarshallSyscall(monitor))
-	return bindlib.UnmarshallSyscall[*Vidmode](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwSetGamma bindlib.PreloadProc
@@ -1802,9 +1822,9 @@ var __imp_glfwGetGammaRamp bindlib.PreloadProc
 // @ref monitor_gamma
 //
 // @since Added in version 3.0.
-func GetGammaRamp(monitor unsafe.Pointer) *Gammaramp {
+func GetGammaRamp(monitor unsafe.Pointer) unsafe.Pointer {
 	__res := bindlib.CCall1(__imp_glfwGetGammaRamp.Addr(), bindlib.MarshallSyscall(monitor))
-	return bindlib.UnmarshallSyscall[*Gammaramp](__res)
+	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
 
 var __imp_glfwSetGammaRamp bindlib.PreloadProc
@@ -1859,7 +1879,7 @@ var __imp_glfwSetGammaRamp bindlib.PreloadProc
 // @ref monitor_gamma
 //
 // @since Added in version 3.0.
-func SetGammaRamp(monitor unsafe.Pointer, ramp *Gammaramp) {
+func SetGammaRamp(monitor unsafe.Pointer, ramp unsafe.Pointer) {
 	bindlib.CCall2(__imp_glfwSetGammaRamp.Addr(), bindlib.MarshallSyscall(monitor), bindlib.MarshallSyscall(ramp))
 }
 
@@ -2441,7 +2461,7 @@ var __imp_glfwSetWindowIcon bindlib.PreloadProc
 // @ref window_icon
 //
 // @since Added in version 3.2.
-func SetWindowIcon(window unsafe.Pointer, count int32, images *Image) {
+func SetWindowIcon(window unsafe.Pointer, count int32, images unsafe.Pointer) {
 	bindlib.CCall3(__imp_glfwSetWindowIcon.Addr(), bindlib.MarshallSyscall(window), bindlib.MarshallSyscall(count), bindlib.MarshallSyscall(images))
 }
 
@@ -4585,7 +4605,7 @@ var __imp_glfwCreateCursor bindlib.PreloadProc
 // @ref glfwCreateStandardCursor
 //
 // @since Added in version 3.1.
-func CreateCursor(image *Image, xhot int32, yhot int32) unsafe.Pointer {
+func CreateCursor(image unsafe.Pointer, xhot int32, yhot int32) unsafe.Pointer {
 	__res := bindlib.CCall3(__imp_glfwCreateCursor.Addr(), bindlib.MarshallSyscall(image), bindlib.MarshallSyscall(xhot), bindlib.MarshallSyscall(yhot))
 	return bindlib.UnmarshallSyscall[unsafe.Pointer](__res)
 }
@@ -5713,7 +5733,7 @@ var __imp_glfwGetGamepadState bindlib.PreloadProc
 // @ref glfwJoystickIsGamepad
 //
 // @since Added in version 3.3.
-func GetGamepadState(jid int32, state *Gamepadstate) int32 {
+func GetGamepadState(jid int32, state unsafe.Pointer) int32 {
 	__res := bindlib.CCall2(__imp_glfwGetGamepadState.Addr(), bindlib.MarshallSyscall(jid), bindlib.MarshallSyscall(state))
 	return bindlib.UnmarshallSyscall[int32](__res)
 }

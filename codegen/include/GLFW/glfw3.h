@@ -7,7 +7,31 @@ typedef signed char        int8_t;    // 有符号8位整数
 typedef signed short       int16_t;   // 有符号16位整数
 typedef signed int         int32_t;   // 有符号32位整数
 typedef signed long long   int64_t;   // 有符号64位整数
-typedef unsigned char bool;           // 使用 typedef 定义 bool 类型
+typedef int bool;           // 使用 typedef 定义 bool 类型
+
+typedef int* intptr_t;
+
+typedef unsigned char      uint8_t;   // 无符号8位整数
+typedef unsigned short     uint16_t;  // 无符号16位整数
+typedef unsigned int       uint32_t;  // 无符号32位整数
+typedef unsigned long long uint64_t;  // 无符号64位整数
+typedef signed char        int8_t;    // 有符号8位整数
+typedef signed short       int16_t;   // 有符号16位整数
+typedef signed int         int32_t;   // 有符号32位整数
+typedef signed long long   int64_t;   // 有符号64位整数
+typedef int bool;           // 使用 typedef 定义 bool 类型
+
+typedef int* intptr_t;
+
+typedef unsigned char      uint8_t;   // 无符号8位整数
+typedef unsigned short     uint16_t;  // 无符号16位整数
+typedef unsigned int       uint32_t;  // 无符号32位整数
+typedef unsigned long long uint64_t;  // 无符号64位整数
+typedef signed char        int8_t;    // 有符号8位整数
+typedef signed short       int16_t;   // 有符号16位整数
+typedef signed int         int32_t;   // 有符号32位整数
+typedef signed long long   int64_t;   // 有符号64位整数
+typedef int bool;           // 使用 typedef 定义 bool 类型
 
 typedef int* intptr_t;
 /*************************************************************************
@@ -112,15 +136,15 @@ extern "C" {
  * the macOS OpenGL header blocks the definition of ptrdiff_t by glext.h.
  * Include it unconditionally to avoid surprising side-effects.
  */
-//#include <stddef.h>
+//////#include <stddef.h>
 
 /* Include because it is needed by Vulkan and related functions.
  * Include it unconditionally to avoid surprising side-effects.
  */
-//#include <stdint.h>
+//////#include <stdint.h>
 
 #if defined(GLFW_INCLUDE_VULKAN)
-  //#include <vulkan/vulkan.h>
+  //////#include <vulkan/vulkan.h>
 #endif /* Vulkan header */
 
 /* The Vulkan header may have indirectly included windows.h (because of
@@ -157,53 +181,53 @@ extern "C" {
  */
 #if defined(GLFW_INCLUDE_ES1)
 
- //#include <GLES/gl.h>
+ //////#include <GLES/gl.h>
  #if defined(GLFW_INCLUDE_GLEXT)
-  //#include <GLES/glext.h>
+  //////#include <GLES/glext.h>
  #endif
 
 #elif defined(GLFW_INCLUDE_ES2)
 
- //#include <GLES2/gl2.h>
+ //////#include <GLES2/gl2.h>
  #if defined(GLFW_INCLUDE_GLEXT)
-  //#include <GLES2/gl2ext.h>
+  //////#include <GLES2/gl2ext.h>
  #endif
 
 #elif defined(GLFW_INCLUDE_ES3)
 
- //#include <GLES3/gl3.h>
+ //////#include <GLES3/gl3.h>
  #if defined(GLFW_INCLUDE_GLEXT)
-  //#include <GLES2/gl2ext.h>
+  //////#include <GLES2/gl2ext.h>
  #endif
 
 #elif defined(GLFW_INCLUDE_ES31)
 
- //#include <GLES3/gl31.h>
+ //////#include <GLES3/gl31.h>
  #if defined(GLFW_INCLUDE_GLEXT)
-  //#include <GLES2/gl2ext.h>
+  //////#include <GLES2/gl2ext.h>
  #endif
 
 #elif defined(GLFW_INCLUDE_ES32)
 
- //#include <GLES3/gl32.h>
+ //////#include <GLES3/gl32.h>
  #if defined(GLFW_INCLUDE_GLEXT)
-  //#include <GLES2/gl2ext.h>
+  //////#include <GLES2/gl2ext.h>
  #endif
 
 #elif defined(GLFW_INCLUDE_GLCOREARB)
 
  #if defined(__APPLE__)
 
-  //#include <OpenGL/gl3.h>
+  //////#include <OpenGL/gl3.h>
   #if defined(GLFW_INCLUDE_GLEXT)
-   //#include <OpenGL/gl3ext.h>
+   //////#include <OpenGL/gl3ext.h>
   #endif /*GLFW_INCLUDE_GLEXT*/
 
  #else /*__APPLE__*/
 
-  //#include <GL/glcorearb.h>
+  //////#include <GL/glcorearb.h>
   #if defined(GLFW_INCLUDE_GLEXT)
-   //#include <GL/glext.h>
+   //////#include <GL/glext.h>
   #endif
 
  #endif /*__APPLE__*/
@@ -213,13 +237,13 @@ extern "C" {
  #if defined(__APPLE__)
 
   #if defined(GLFW_INCLUDE_GLU)
-   //#include <OpenGL/glu.h>
+   //////#include <OpenGL/glu.h>
   #endif
 
  #else /*__APPLE__*/
 
   #if defined(GLFW_INCLUDE_GLU)
-   //#include <GL/glu.h>
+   //////#include <GL/glu.h>
   #endif
 
  #endif /*__APPLE__*/
@@ -246,13 +270,13 @@ extern "C" {
   #if !defined(GLFW_INCLUDE_GLEXT)
    #define GL_GLEXT_LEGACY
   #endif
-  //#include <OpenGL/gl.h>
+  //////#include <OpenGL/gl.h>
 
  #else /*__APPLE__*/
 
-  //#include <GL/gl.h>
+  //////#include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)
-   //#include <GL/glext.h>
+   //////#include <GL/glext.h>
   #endif
 
  #endif /*__APPLE__*/
@@ -2036,8 +2060,8 @@ typedef void (* GLFWjoystickfun)(int jid, int event);
  *
  *  @ingroup monitor
  */
-typedef struct GLFWvidmode_ {
-
+typedef struct GLFWvidmode
+{
     /*! The width, in screen coordinates, of the video mode.
      */
     int width;
@@ -2070,8 +2094,8 @@ typedef struct GLFWvidmode_ {
  *
  *  @ingroup monitor
  */
-typedef struct GLFWgammaramp_ {
-
+typedef struct GLFWgammaramp
+{
     /*! An array of value describing the response of the red channel.
      */
     unsigned short* red;
@@ -2099,8 +2123,8 @@ typedef struct GLFWgammaramp_ {
  *
  *  @ingroup window
  */
-typedef struct GLFWimage_ {
-
+typedef struct GLFWimage
+{
     /*! The width, in pixels, of this image.
      */
     int width;
@@ -2123,8 +2147,8 @@ typedef struct GLFWimage_ {
  *
  *  @ingroup input
  */
-typedef struct GLFWgamepadstate_ {
-
+typedef struct GLFWgamepadstate
+{
     /*! The states of each [gamepad button](@ref gamepad_buttons), `GLFW_PRESS`
      *  or `GLFW_RELEASE`.
      */
@@ -2147,8 +2171,8 @@ typedef struct GLFWgamepadstate_ {
  *
  *  @ingroup init
  */
-typedef struct GLFWallocator_ {
-
+typedef struct GLFWallocator
+{
     /*! The memory allocation function.  See @ref GLFWallocatefun for details about
      *  allocation function.
      */
@@ -6570,5 +6594,7 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 #endif
 
 #endif /* _glfw3_h_ */
+
+
 
 
