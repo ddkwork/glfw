@@ -37,7 +37,10 @@ func main() {
 	glfw.SetCursorEnterCallback(w, glfw.Cursorenterfun(newCallback))
 
 	c := purego.NewCallback(func(win uintptr, path_count int, files glfw.Charfun) uintptr {
-		println(files)
+		paths := make([]string, path_count)
+		for i := 0; i < path_count; i++ {
+			paths[i] = BytePointerToString((*byte)(files)) //todo not working
+		}
 		return uintptr(w)
 	})
 	glfw.SetDropCallback(w, glfw.Dropfun(c))
@@ -55,6 +58,7 @@ func main() {
 
 	// Setting a custom cursor.
 	//w.SetIcon([]image.Image{whiteTriangle})
+	//glfw.SetWindowIcon(w, 1, unsafe.Pointer(whiteTriangle))
 
 	for !Boolean2Bool(glfw.WindowShouldClose(w)) {
 		glfw.SwapBuffers(w)
