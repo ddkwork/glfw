@@ -37,16 +37,6 @@ func main() {
 	glfw.SetCursorEnterCallback(w, glfw.Cursorenterfun(newCallback))
 
 	//typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
-	//c := purego.NewCallback(func(win uintptr, path_count int, files **byte) uintptr {
-	//	paths := make([]string, path_count)
-	//	for i := 0; i < path_count; i++ {
-	//		paths[i] = BytePointerToString((files)) //todo not working
-	//	}
-	//	return uintptr(w)
-	//})
-	//glfw.SetDropCallback(w, glfw.Dropfun(c))
-
-	//typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
 	c := purego.NewCallback(func(win uintptr, path_count int, paths **byte) uintptr {
 		convertedPaths := make([]string, path_count)
 		for i := 0; i < path_count; i++ {
