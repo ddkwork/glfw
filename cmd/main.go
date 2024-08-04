@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/ddkwork/glfw"
+	"github.com/ebitengine/purego"
 	"image"
 	"image/color"
 	"unsafe"
@@ -13,9 +14,20 @@ func main() {
 	w := glfw.CreateWindow(640, 480, StringToBytePointer("Custom Cursor"), nil, nil)
 	glfw.MakeContextCurrent(w)
 
-	// Creating a custom cursor.  todo bug
-	//cursor := glfw.CreateCursor(unsafe.Pointer(whiteTriangle), 0, 0)
-	//glfw.SetCursor(w, cursor)
+	// Creating a custom cursor.
+	callback := purego.NewCallback(func(img *image.NRGBA) *image.NRGBA {
+		c := color.NRGBA{R: 0xFF, G: 0xFF, B: 0xFF, A: 0xFF}
+		const size = 16
+		m := image.NewNRGBA(image.Rect(0, 0, size, size))
+		for y := 0; y < size; y++ {
+			for x := 0; x < size-y; x++ {
+				m.SetNRGBA(x, y, c)
+			}
+		}
+		return m
+	})
+	cursor := glfw.CreateCursor(unsafe.Pointer(callback), 0, 0)
+	glfw.SetCursor(w, cursor)
 
 	// Setting a custom cursor.
 	//w.SetIcon([]image.Image{whiteTriangle})
