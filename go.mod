@@ -3,7 +3,7 @@ module github.com/ddkwork/glfw
 go 1.23
 
 require (
-	github.com/ddkwork/golibrary v0.0.0-20240802082739-ae4f0bcd4079
+	github.com/ddkwork/golibrary v0.0.0-20240807032548-2d6a9a212679
 	github.com/ebitengine/purego v0.8.0-alpha.3.0.20240717153933-b9dbbd0c9d2c
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/sys v0.22.0
